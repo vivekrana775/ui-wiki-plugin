@@ -1,6 +1,6 @@
 figma.showUI(__html__, {
   width: 500,
-  height: 550,
+  height: 700,
 });
 
 figma.ui.onmessage = (msg) => {
