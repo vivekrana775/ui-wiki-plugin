@@ -1,6 +1,6 @@
 import axios from "axios";
-// import Cookies from "js-cookie";
 import { HOST_NAME } from "../utils/constant";
+import { getItemFigmaClientStorage } from "../utils/storage";
 
 export const getAllConstantValues = (filters?: any) => {
   return new Promise<any>((resolve, reject) => {
@@ -13,7 +13,7 @@ export const getAllConstantValues = (filters?: any) => {
         filters?.type
       }`,
       headers: {
-        // Authorization: `Bearer ${Cookies.get("jstoken")}`,
+        Authorization: `Bearer ${getItemFigmaClientStorage("jsToken")}`,
         "Content-Type": "application/json",
       },
     };

@@ -1,6 +1,9 @@
 import React from 'react';
+import { useGlobalContext } from '../context/GlobalContext';
 
-const NoResultUI = ({resetFilters}) => {
+const NoResultUI = () => {
+  const { resetFilters } = useGlobalContext();
+
   return (
     <div className="empty-state">
       <svg className="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">

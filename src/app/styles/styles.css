@@ -195,6 +195,11 @@
     transition: all 0.2s;
     background-color: #eff1f5;
   }
+
+  .reset-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
   
   .reset-btn:hover {
     color: #374151;

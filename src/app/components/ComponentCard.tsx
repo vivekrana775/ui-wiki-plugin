@@ -1,6 +1,9 @@
 import React from 'react';
+import { useGlobalContext } from '../context/GlobalContext';
 
-const ComponentCard = ({ card, viewMode }) => {
+const ComponentCard = ({ card }) => {
+  const { viewMode } = useGlobalContext();
+
   return (
     <div className={`component-card ${viewMode === 'list' ? 'list-layout' : ''}`}>
       <div className={`component-preview ${card.backgroundClass} ${viewMode === 'list' ? 'list-view' : ''}`}>
@@ -17,7 +20,7 @@ const ComponentCard = ({ card, viewMode }) => {
         </div>
 
         {/* Premium Badge */}
-        {!card.isFree && (
+        {card.license === "PREMIUM" && (
           <div className="premium-badge">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M2 6L7 12L12 6L17 12L22 6V20H2V6Z" fill="white" />
@@ -25,8 +28,8 @@ const ComponentCard = ({ card, viewMode }) => {
             </svg>
           </div>
         )}
-        <div >
-          <img src={card?.documents[0]?.url} alt={card.title} style={{ width: '100%', borderRadius: "8px" }} />
+        <div>
+          <img src={card?.documents[0]?.url} alt={card.title} style={{ width: '100%', borderRadius: '8px' }} />
         </div>
       </div>
     </div>

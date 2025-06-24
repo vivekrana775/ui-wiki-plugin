@@ -1,6 +1,9 @@
 import React from 'react';
+import { useGlobalContext } from '../context/GlobalContext';
 
-const GridControls = ({setViewMode,viewMode}) => {
+const GridControls = () => {
+  const { setViewMode, viewMode } = useGlobalContext();
+
   return (
     <div className="view-controls">
       <button onClick={() => setViewMode('list')} className={`view-btn ${viewMode === 'list' ? 'active' : ''}`}>

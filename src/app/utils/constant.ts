@@ -1,4 +1,2 @@
-const isActiveLocalHost = true;
-
 export let HOST_NAME: any = "https://apibeta.uiwiki.co";
 export let CLOUDFRONT_DOMAIN: string = "https://d2viq8pnr9yec8.cloudfront.net";

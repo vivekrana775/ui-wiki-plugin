@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useGlobalContext } from '../context/GlobalContext';
 
-const Header = ({ activeTab, setActiveTab, tabs }) => {
+const Header = () => {
+  const {tabs,activeTab, setActiveTab}=useGlobalContext()
   return (
     <div className="header">
       <div className="skyblue_circle"></div>

@@ -1,6 +1,6 @@
 import axios from "axios";
-// import Cookies from "js-cookie";
 import { HOST_NAME } from "../utils/constant";
+import { getItemFigmaClientStorage } from "../utils/storage";
 
 export const getAllCollections = (filters?: any) => {
   return new Promise<any>((resolve, reject) => {
@@ -11,7 +11,7 @@ export const getAllCollections = (filters?: any) => {
         filters?.type || ""
       }&page=${filters?.page || 1}&pageSize=${filters?.pageSize || 25}`,
       headers: {
-        // Authorization: `Bearer ${Cookies.get("jstoken")}`,
+        Authorization: `Bearer ${getItemFigmaClientStorage("jsToken")}`,
         "Content-Type": "application/json",
       },
     };

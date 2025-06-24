@@ -1,77 +1,48 @@
-import React, { useCallback, useEffect, useRef } from 'react';
-import logo from '../assets/logo.svg';
+import React, { useEffect, useRef } from 'react';
 import Dropdown from './components/Dropdown';
 import './styles/ui.css';
 import './styles/styles.css';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import FreeToggle from './components/FreeToggle';
 import ComponentCard from './components/ComponentCard';
 import Header from './components/Header';
 import GridControls from './components/GridControls';
-import { getAllCollections } from './services/collection';
-import { getAllConstantValues } from './services/constantValues';
 import { getAllComponents } from './services/component';
 import NoResultUI from './components/NoResultUI';
 import SearchComponent from './components/SearchComponent';
+import { useGlobalContext } from './context/GlobalContext';
 
 const ROWS_PER_PAGE = 20;
 
 function App() {
+  const {
+    resetFilters,
+    selectedCollection,
+    setSelectedCollection,
+    selectedCategory,
+    setSelectedCategory,
+    loading,
+    setLoading,
+    showFreeOnly,
+    searchQuery,
+    collections,
+    categories,
+    viewMode,
+    collectionDropdownOpen,
+    setCollectionDropdownOpen,
+    categoryDropdownOpen,
+    setCategoryDropdownOpen,
+  } = useGlobalContext();
   const [page, setPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState(true);
   const [loadMoreLoading, setLoadMoreLoading] = useState(false);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [activeTab, setActiveTab] = useState('Components');
-  const tabs = ['Components', 'Pages', 'Screens'];
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCollection, setSelectedCollection] = useState('all');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [showFreeOnly, setShowFreeOnly] = useState(false);
-  const [collectionDropdownOpen, setCollectionDropdownOpen] = useState(false);
-  const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
-  const [collectionsList, setCollectionsList] = useState<any>([]);
-  const [categoriesList, setCategoriesList] = useState<any>([]);
-  const [loading, setLoading] = useState<any>(false);
-  const [currentScreen, setCurrentScreen] = useState<any>('COMPONENT');
   const [componentsData, setComponentsData] = useState<{ paginatedComponents: any[] }>({ paginatedComponents: [] });
 
   const loaderRef = useRef<HTMLDivElement>(null);
 
-  const fetchCollections = useCallback(async (filters?: any) => {
-    setLoading(true);
-
-    await getAllCollections(filters)
-      .then((res: any) => {
-        // Sort collections in descending order based on createdAt
-        const sortedCollections = res?.paginatedCollections.sort((a: any, b: any) => {
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-        });
-        setCollectionsList(sortedCollections);
-      })
-      .catch((err) => {
-        console.log('err');
-      })
-      .finally(() => setLoading(false));
-  }, []);
-  
-  const fetchCategories = useCallback(async (filters?: any) => {
-    setLoading(true);
-    await getAllConstantValues(filters)
-      .then((res: any) => {
-        // Sort categories alphabetically by the 'value' property
-        const sortedCategories = res?.paginatedConstantValues.sort((a: any, b: any) => {
-          return a.value.localeCompare(b.value);
-        });
-        setCategoriesList(sortedCategories);
-      })
-      .catch(() => console.log('err'))
-      .finally(() => setLoading(false));
-  }, []);
-
   // Data fetching with filters
   const getComponents = async (filters?: any, resetPage = false) => {
-    // setLoading(true);
     try {
       const res: any = await getAllComponents(filters);
       if (resetPage || page === 1) {
@@ -86,6 +57,7 @@ function App() {
       console.error('Error fetching filtered components:', err);
     } finally {
       setLoading(false);
+      setLoadMoreLoading(false);
     }
   };
 
@@ -93,8 +65,7 @@ function App() {
   const handleLoadMore = () => {
     setLoadMoreLoading(true);
     setPage((prevPage) => {
-      const newPage = prevPage + 1;
-      return newPage;
+      return prevPage + 1;
     });
   };
 
@@ -120,72 +91,90 @@ function App() {
     };
   }, [loading, hasMore]);
 
+  // Infinity api call on page change
   useEffect(() => {
-    fetchCollections({ type: currentScreen });
-    fetchCategories({ type: `${currentScreen}_CATEGORY` });
-  }, [currentScreen]);
+    if (page === 1) return;
 
-  useEffect(() => {
     const filters = {
-      page: page,
+      collections: selectedCollection !== 'all' ? [selectedCollection] : [],
+      categories: selectedCategory !== 'all' ? [selectedCategory] : [],
+      licenses: showFreeOnly == true ? ['Free'] : ['Premium', 'Free'],
+      searchBy: searchQuery,
       pageSize: ROWS_PER_PAGE,
+      page,
     };
     getComponents(filters);
   }, [page]);
 
+  // get data on every filter change
   useEffect(() => {
+    setPage(1);
     const filters = {
-      pageSize: ROWS_PER_PAGE,
+      collections: selectedCollection !== 'all' ? [selectedCollection] : [],
+      categories: selectedCategory !== 'all' ? [selectedCategory] : [],
+      licenses: showFreeOnly == true ? ['Free'] : ['Premium', 'Free'],
       searchBy: searchQuery,
+      pageSize: ROWS_PER_PAGE,
       page,
     };
     getComponents(filters, true);
-  }, []);
+  }, [selectedCollection, selectedCategory, showFreeOnly, searchQuery]);
 
-  // console.log('componentsData', componentsData);
-
-  const resetFilters = () => {
-    setSearchQuery('');
-    setSelectedCollection('all');
-    setSelectedCategory('all');
-    setShowFreeOnly(false);
+  const handleReset = () => {
+    resetFilters();
+    setPage(1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  const isAnyFilterApplied =
+    selectedCollection !== 'all' || selectedCategory !== 'all' || showFreeOnly === true || searchQuery.trim() !== '';
+
   return (
     <div className="container">
       {/* Header */}
-      <Header activeTab={activeTab} setActiveTab={setActiveTab} tabs={tabs} />
+      <Header />
 
       {/* Filters and Search */}
       <div className="filters-section">
         <div className="filters-row">
           <Dropdown
-            options={collectionsList}
+            options={collections}
             value={selectedCollection}
             onChange={setSelectedCollection}
             placeholder="Collection"
             isOpen={collectionDropdownOpen}
             setIsOpen={setCollectionDropdownOpen}
+            labelKey="name"
+            valueKey="name"
+            showImage={true}
+            imageKey="logoUrl"
           />
 
           <Dropdown
-            options={categoriesList}
+            options={categories}
             value={selectedCategory}
             onChange={setSelectedCategory}
             placeholder="Category"
             isOpen={categoryDropdownOpen}
             setIsOpen={setCategoryDropdownOpen}
+            labelKey="value"
+            valueKey="value"
           />
-          <FreeToggle isOn={showFreeOnly} setShowFreeOnly={setShowFreeOnly} />
+          <FreeToggle />
         </div>
 
         <div className="search-row">
-          <SearchComponent searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+          <SearchComponent />
 
-          <button onClick={resetFilters} className="reset-btn">
+          <button
+            onClick={handleReset}
+            className={`reset-btn ${!isAnyFilterApplied ? 'disabled' : ''}`}
+            disabled={!isAnyFilterApplied}
+          >
             Reset
           </button>
 
-          <GridControls viewMode={viewMode} setViewMode={setViewMode} />
+          <GridControls />
         </div>
       </div>
 
@@ -195,11 +184,11 @@ function App() {
           {loading ? (
             <div> Loading...</div>
           ) : componentsData?.paginatedComponents.length === 0 ? (
-            <NoResultUI resetFilters={resetFilters} />
+            <NoResultUI />
           ) : (
             <div className={viewMode === 'grid' ? 'components-grid' : 'components-list'}>
               {componentsData?.paginatedComponents.map((card) => (
-                <ComponentCard key={card.id} card={card} viewMode={viewMode} />
+                <ComponentCard key={card.id} card={card} />
               ))}
             </div>
           )}
