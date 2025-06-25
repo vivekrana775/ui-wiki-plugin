@@ -1,6 +1,9 @@
 import React, { createContext, useState, useCallback, useEffect, useRef, ReactNode, useContext, useMemo } from 'react';
 import { getAllCollections } from '../services/collection';
 import { getAllConstantValues } from '../services/constantValues';
+import { loginUserByToken } from '../services/authentication';
+import { getItemFigmaClientStorage, removeItemFigmaClientStorage, setItemFigmaClientStorage } from '../utils/storage';
+import { getUserById } from '../services/user';
 
 interface GlobalContextProps {
   currentScreen: string;
@@ -30,6 +33,10 @@ interface GlobalContextProps {
   categoryDropdownOpen: boolean;
   setCategoryDropdownOpen: (val: boolean) => void;
   tabs: any;
+  isSubscribed: boolean;
+  setIsSubscribed: any;
+  userSubscriptions: any;
+  setUserSubscriptions: any;
 }
 
 export const GlobalContext = createContext<GlobalContextProps | undefined>(undefined);
@@ -58,6 +65,9 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
   const [loading, setLoading] = useState(false);
   const [collectionDropdownOpen, setCollectionDropdownOpen] = useState(false);
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
+  const [userDetails, setUserDetails] = useState<any>('');
+  const [userSubscriptions, setUserSubscriptions] = useState<any>([]);
 
   const fetchCollections = useCallback(async (filters?: any) => {
     setLoading(true);
@@ -90,6 +100,20 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
       .finally(() => setLoading(false));
   }, []);
 
+  const getUserSubscriptionsDetails = async (id: string) => {
+    const response = await getUserById(id);
+    const subscriptions = response?.data?.subscriptions;
+
+    if (subscriptions?.length > 0) {
+      setUserSubscriptions(subscriptions);
+      for (let subscription of subscriptions) {
+        if (subscription.status !== 'INACTIVE') {
+          setIsSubscribed(true);
+        }
+      }
+    }
+  };
+
   const resetFilters = () => {
     setSearchQuery('');
     setLocalSearch('');
@@ -97,6 +121,34 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
     setSelectedCategory('all');
     setShowFreeOnly(false);
   };
+
+  useEffect(() => {
+    if (userDetails) {
+      getUserSubscriptionsDetails(userDetails._id);
+    }
+  }, [userDetails]);
+
+  useEffect(() => {
+    const fetchUserDetails = async (token: string) => {
+      await loginUserByToken({ token })
+        .then((res) => {
+          setItemFigmaClientStorage('jsToken', res?.data?.token);
+          setItemFigmaClientStorage('user', JSON.stringify(res?.data));
+          setItemFigmaClientStorage('userId', JSON.stringify(res?.data?._id));
+          setUserDetails(res?.data?.user);
+        })
+        .catch((err) => {
+          console.log('err', 'err in logging user by token');
+        });
+    };
+
+    const userToken: any = getItemFigmaClientStorage('jsToken');
+    if (userToken) {
+      fetchUserDetails(userToken);
+    } else {
+      removeItemFigmaClientStorage('jsToken');
+    }
+  }, []);
 
   useEffect(() => {
     fetchCollections({ type: currentScreen });
@@ -132,6 +184,10 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
       categoryDropdownOpen,
       setCategoryDropdownOpen,
       tabs,
+      isSubscribed,
+      setIsSubscribed,
+      userSubscriptions,
+      setUserSubscriptions,
     }),
     [
       currentScreen,
@@ -161,6 +217,10 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
       categoryDropdownOpen,
       setCategoryDropdownOpen,
       tabs,
+      isSubscribed,
+      setIsSubscribed,
+      userSubscriptions,
+      setUserSubscriptions,
     ]
   );
 

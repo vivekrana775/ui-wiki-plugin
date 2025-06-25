@@ -58,3 +58,26 @@ export const getAllComponents = (filters?: any) => {
       });
   });
 };
+
+export const getFigmaSouceCodeById = (objectId: string) => {
+  return new Promise((resolve, reject) => {
+    const config = {
+      method: "get",
+      maxBodyLength: Infinity,
+      url: `${HOST_NAME}/figma-source/${objectId}`,
+      headers: {
+        Authorization: `Bearer ${getItemFigmaClientStorage("jsToken")}`,
+        // Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjY4MjZkYjY4OTM5OGYzNzAwNDA5MTIyZCIsImlkIjoiNjgyNmRiNjg5Mzk4ZjM3MDA0MDkxMjJkIn0sImlhdCI6MTc1MDg0ODg1MiwiZXhwIjoxNzU4NjI0ODUyfQ.-sFfsYvGwKH-2SbP8ixC18AmsUlZ4maHVmbX6DbLxsY`,
+      },
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+        resolve(response?.data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};

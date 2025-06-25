@@ -1,14 +1,79 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useGlobalContext } from '../context/GlobalContext';
+import { getItemFigmaClientStorage } from '../utils/storage';
+import { getFigmaSouceCodeById } from '../services/component';
 
 const ComponentCard = ({ card }) => {
-  const { viewMode } = useGlobalContext();
+  const { viewMode, isSubscribed } = useGlobalContext();
+  const [copyLoading, setCopyLoading] = useState<boolean>(false);
+
+  const handleCopyFigmaCode = async () => {
+    setCopyLoading(true);
+
+    // const token = await getItemFigmaClientStorage('jsToken');
+    // if (!token) {
+    //   alert('Please login first.');
+    //   setCopyLoading(false);
+    //   return;
+    // }
+
+    if (isSubscribed || card?.license === 'FREE') {
+      try {
+        console.log('1');
+        const componentSourceCode: any = await getFigmaSouceCodeById(card?.id);
+        const htmlContent = componentSourceCode?.data?.figmaCode || '';
+        console.log('2');
+
+        if (!htmlContent) {
+          console.log('3');
+          alert('No content to copy.');
+          setCopyLoading(false);
+          return;
+        }
+        console.log('4');
+        // Create a Blob with the HTML content and specify the MIME type as 'text/html'
+        // const blob = new Blob([htmlContent], { type: 'text/html' });
+        // const clipboardItem = new ClipboardItem({ 'text/html': blob });
+        // Copy the Blob to the clipboard
+
+        // navigator.clipboard
+        //   .write([clipboardItem])
+        //   .then(() => {
+        //     console.log('5');
+        //     alert('component Copied success');
+        //   })
+        //   .catch((err) => {
+        //     console.log('6');
+        //     alert('Unable to copy component');
+        //   });
+
+        // console.log("clipboardItem",clipboardItem)
+        //  Message bhejna main thread ko ke copy karna hai
+        window.parent.postMessage({ pluginMessage: { type: 'copy-to-clipboard', content: htmlContent } }, '*');
+
+        // Success notification bhejna
+        // window.parent.postMessage(
+        //   { pluginMessage: { type: 'show-notification', content: 'Component copied successfully!' } },
+        //   '*'
+        // );
+      } catch (error) {
+        console.log('7');
+        console.error('Copy failed:', error);
+        alert('Failed Something went wrong.');
+      }
+    } else {
+      console.log('8');
+      alert('Please subscribed first.');
+    }
+    console.log('9');
+    setCopyLoading(false);
+  };
 
   return (
     <div className={`component-card ${viewMode === 'list' ? 'list-layout' : ''}`}>
       <div className={`component-preview ${card.backgroundClass} ${viewMode === 'list' ? 'list-view' : ''}`}>
         {/* copy icon  */}
-        <div className="copy_icon">
+        <div onClick={handleCopyFigmaCode} className="copy_icon">
           <span>Copy</span>
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
             <rect width="24" height="24" fill="white" opacity="0.01" />
@@ -20,7 +85,7 @@ const ComponentCard = ({ card }) => {
         </div>
 
         {/* Premium Badge */}
-        {card.license === "PREMIUM" && (
+        {card.license === 'PREMIUM' && (
           <div className="premium-badge">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M2 6L7 12L12 6L17 12L22 6V20H2V6Z" fill="white" />

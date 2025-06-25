@@ -3,7 +3,7 @@ figma.showUI(__html__, {
   height: 700,
 });
 
-figma.ui.onmessage = (msg) => {
+figma.ui.onmessage = async(msg) => {
   if (msg.type === 'create-rectangles') {
     const nodes = [];
 
@@ -23,7 +23,52 @@ figma.ui.onmessage = (msg) => {
       type: 'create-rectangles',
       message: `Created ${msg.count} Rectangles`,
     });
+    figma.closePlugin();
   }
 
-  figma.closePlugin();
+   if (msg.type === "get-storage") {
+    const value = await figma.clientStorage.getAsync(msg.key);
+    figma.ui.postMessage({
+      type: "storage-response",
+      key: msg.key,
+      value,
+    });
+  }
+
+  if (msg.type === "set-storage") {
+    await figma.clientStorage.setAsync(msg.key, msg.value);
+  }
+
+  if (msg.type === "remove-storage") {
+    await figma.clientStorage.setAsync(msg.key, null);
+  }
+
+  // if (msg.type === "copy-to-clipboard") {
+  //   // console.log("msg.content===>", msg.content)
+  //   await figma.clipboard.writeText(msg.content);
+  //   figma.notify("Component copied to clipboard!");
+  // }
+  // if (msg.type === "copy-to-clipboard") {
+  //   console.log("Message from UI:", msg);
+  //   console.log("Copy to clipboard called with content:", msg.content);
+  //   await figma.clipboard.writeText(msg.content);
+  //   // await figma.clipboard.writeText("hello dosto");
+  //   // figma.notify("Component copied to clipboard!");
+  //   figma.notify("###################################");
+  // }
+if (msg.type === "copy-to-clipboard") {
+  console.log("Copy to clipboard called with content:", msg.content);
+  try {
+    await figma.clipboard.writeText("hello dosto");
+    figma.notify("###################################");
+  } catch (err) {
+    console.log("Clipboard error:", err);
+    figma.notify("Clipboard write failed!");
+  }
+}
+  // if (msg.type === "show-notification") {
+  //   figma.notify(msg.content);
+  // }
+
+  // figma.closePlugin();
 };

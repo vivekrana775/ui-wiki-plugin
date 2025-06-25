@@ -41,6 +41,12 @@ function App() {
 
   const loaderRef = useRef<HTMLDivElement>(null);
 
+  const handleReset = () => {
+    resetFilters();
+    setPage(1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   // Data fetching with filters
   const getComponents = async (filters?: any, resetPage = false) => {
     try {
@@ -120,12 +126,6 @@ function App() {
     getComponents(filters, true);
   }, [selectedCollection, selectedCategory, showFreeOnly, searchQuery]);
 
-  const handleReset = () => {
-    resetFilters();
-    setPage(1);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
   const isAnyFilterApplied =
     selectedCollection !== 'all' || selectedCategory !== 'all' || showFreeOnly === true || searchQuery.trim() !== '';
 
@@ -139,26 +139,26 @@ function App() {
         <div className="filters-row">
           <Dropdown
             options={collections}
-            value={selectedCollection}
+            selectedId={selectedCollection}
             onChange={setSelectedCollection}
             placeholder="Collection"
             isOpen={collectionDropdownOpen}
             setIsOpen={setCollectionDropdownOpen}
             labelKey="name"
-            valueKey="name"
+            valueKey="_id"
             showImage={true}
             imageKey="logoUrl"
           />
 
           <Dropdown
             options={categories}
-            value={selectedCategory}
+            selectedId={selectedCategory}
             onChange={setSelectedCategory}
             placeholder="Category"
             isOpen={categoryDropdownOpen}
             setIsOpen={setCategoryDropdownOpen}
             labelKey="value"
-            valueKey="value"
+            valueKey="_id"
           />
           <FreeToggle />
         </div>

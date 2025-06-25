@@ -1,28 +1,32 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 
 export default function Dropdown({
   options = [],
-  value = 'all',
+  selectedId = 'all',
   onChange,
   placeholder = 'Select',
   isOpen,
   setIsOpen,
   labelKey = 'value', // Key to display (default: 'value')
-  valueKey = 'value', // Key to compare/set (default: 'value')
+  valueKey = '_id', // Key to compare/set (default: 'value')
   showImage = false, // Whether to show image/icon
   imageKey = 'logoUrl', // Image key if showImage is true
 }) {
   const ref: any = useRef();
+  const [selectedLabel, setSelectedLabel] = useState('');
 
-  // Determine label to show on button
-  const getSelectedLabel = () => {
-    if (value === 'all') return `All ${placeholder}`;
-    const selectedOption = options.find((opt) => opt[valueKey] === value);
-    return selectedOption?.[labelKey] || placeholder;
-  };
+  // When selectedId changes from parent, update internal label
+  useEffect(() => {
+    if (selectedId === 'all') {
+      setSelectedLabel(`All ${placeholder}`);
+    } else {
+      const selectedOption = options.find((opt) => opt[valueKey] === selectedId);
+      setSelectedLabel(selectedOption ? selectedOption[labelKey] : placeholder);
+    }
+  }, [selectedId, options]);
 
   const handleSelect = (selectedValue) => {
-    onChange(selectedValue);
+    onChange(selectedValue); // send id to parent
     setIsOpen(false);
   };
 
@@ -39,8 +43,8 @@ export default function Dropdown({
 
   return (
     <div className="custom-dropdown" ref={ref}>
-      <button className={`dropdown-btn ${isOpen ? 'open' : ''}`} onClick={() => setIsOpen((prev) => !prev)}>
-        {getSelectedLabel()}
+      <button className={`dropdown-btn ${isOpen ? 'open' : ''}`} onClick={() => setIsOpen((prev:boolean) => !prev)}>
+        {selectedLabel}
         <span className={`arrow ${isOpen ? 'rotate' : ''}`}>
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -54,7 +58,7 @@ export default function Dropdown({
         </li>
         {options.map((opt: any, index: any) => {
           const optionValue = opt[valueKey];
-          const isSelected = value === optionValue;
+          const isSelected = selectedId === optionValue;
           return (
             <li
               key={index}

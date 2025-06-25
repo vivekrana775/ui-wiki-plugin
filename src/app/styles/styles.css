@@ -333,7 +333,8 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-     border-radius: 8px;
+    border-radius: 8px;
+    cursor: pointer;
   }
   
   .component-preview.list-view {
@@ -364,6 +365,9 @@
   }
   .copy_icon > span{
     font-size: 14px;
+  }
+  .copy_icon:hover{
+   background-color: rgb(18, 29, 95);
   }
 
   .premium-badge {
