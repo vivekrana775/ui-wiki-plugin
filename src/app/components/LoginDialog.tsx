@@ -623,7 +623,6 @@ const LoginDialog: React.FC<Props> = (props) => {
         // Await the loginUser function call
         const res: any = await loginUser(data);
         if (res?.data?.token !== undefined && res?.data?.token !== '' && res?.data?.token !== null) {
-          localStorage.setItem('jstoken', res.data.token);
           setItemFigmaClientStorage('user', JSON.stringify(res.data));
           setItemFigmaClientStorage('userId', JSON.stringify(res.data._id));
           setItemFigmaClientStorage('jsToken', res.data.token);

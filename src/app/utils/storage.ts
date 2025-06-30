@@ -30,23 +30,28 @@
 
 
 
-// storage.ts
 
 export function getItemFigmaClientStorage(key: string): Promise<any> {
-  return new Promise((resolve) => {
-    window.parent.postMessage(
-      { pluginMessage: { type: "get-storage", key } },
-      "*"
-    );
-
+  return new Promise((resolve, reject) => {
+     const timeout = setTimeout(() => {
+      reject(new Error('Storage timeout'));
+      window.removeEventListener("message", handler);
+    }, 3000); // 3 second timeout
+     
     const handler = (event: MessageEvent) => {
-      if (event.data.pluginMessage?.type === "storage-response" && event.data.pluginMessage?.key === key) {
+      if (event.data.pluginMessage?.type === "storage-response" && 
+          event.data.pluginMessage?.key === key) {
+        clearTimeout(timeout);
         resolve(event.data.pluginMessage.value);
         window.removeEventListener("message", handler);
       }
     };
 
     window.addEventListener("message", handler);
+    window.parent.postMessage(
+      { pluginMessage: { type: "get-storage", key } },
+      "*"
+    );
   });
 }
 

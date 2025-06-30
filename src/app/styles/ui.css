@@ -301,10 +301,7 @@ input:focus {
   gap: 12px;
   text-align: left;
 }
-.setting_user_img > img{
-  width: 50px;
-  height: 50px;
-}
+
 .setting_username{
   font-size: 16px;
   font-weight: 600;

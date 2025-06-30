@@ -1,9 +1,19 @@
 import React from 'react';
 import { useGlobalContext } from '../context/GlobalContext';
 import UserIconSvg from '../assets/icons/UserIconSvg';
+import { getItemFigmaClientStorage } from '../utils/storage';
 
 const Header = () => {
-  const { tabs, activeTab, setActiveTab,setCurrentPage, } = useGlobalContext();
+  const { tabs, activeTab, setActiveTab, setCurrentPage, setActiveLoginDialog } = useGlobalContext();
+
+  const handleOpenSettingPage = async () => {
+    const token = await getItemFigmaClientStorage('jsToken');
+    if (!token) {
+      setActiveLoginDialog(true);
+      return;
+    }
+    setCurrentPage('SETTINGS');
+  };
   return (
     <div className="header">
       {/* Navigation */}
@@ -20,7 +30,7 @@ const Header = () => {
             </li>
           ))}
         </ul>
-        <div className="user-avatar" onClick={()=>{setCurrentPage("SETTINGS")}}>
+        <div className="user-avatar" onClick={handleOpenSettingPage}>
           <UserIconSvg />
         </div>
       </div>

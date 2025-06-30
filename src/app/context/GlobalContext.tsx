@@ -13,14 +13,14 @@ interface GlobalContextProps {
   setCurrentScreen: (screen: string) => void;
   activeTab: number;
   setActiveTab: (tab: number) => void;
-  collections: any;
-  categories: any;
+  collections: any[];
+  categories: any[];
   selectedCollection: string;
   setSelectedCollection: (val: string) => void;
   selectedCategory: string;
   setSelectedCategory: (val: string) => void;
   showFreeOnly: boolean;
-  setShowFreeOnly: any;
+  setShowFreeOnly: (val: boolean) => void;
   searchQuery: string;
   setSearchQuery: (val: string) => void;
   localSearch: string;
@@ -35,21 +35,21 @@ interface GlobalContextProps {
   setCollectionDropdownOpen: (val: boolean) => void;
   categoryDropdownOpen: boolean;
   setCategoryDropdownOpen: (val: boolean) => void;
-  tabs: any;
+  tabs: any[];
   isSubscribed: boolean;
-  setIsSubscribed: any;
-  userSubscriptions: any;
-  setUserSubscriptions: any;
-  componentCopiedpopupVisible: any;
-  setComponentCopiedpopupVisible: any;
-  copiedFigmaDesignMessage: any;
-  setCopiedFigmaDesignMessage: any;
+  setIsSubscribed: (val: boolean) => void;
+  userSubscriptions: any[];
+  setUserSubscriptions: (val: any[]) => void;
+  componentCopiedpopupVisible: boolean;
+  setComponentCopiedpopupVisible: (val: boolean) => void;
+  copiedFigmaDesignMessage: string;
+  setCopiedFigmaDesignMessage: (val: string) => void;
   activeLoginDialog: boolean;
-  setActiveLoginDialog: any;
+  setActiveLoginDialog: (val: boolean) => void;
   userDetails: any;
-  setUserDetails: any;
-  currentPage: any;
-  setCurrentPage: any;
+  setUserDetails: (val: any) => void;
+  currentPage: string;
+  setCurrentPage: (val: string) => void;
 }
 
 export const GlobalContext = createContext<GlobalContextProps | undefined>(undefined);
@@ -63,7 +63,6 @@ export const useGlobalContext = () => {
 };
 
 export const GlobalContextProvider = ({ children }: { children: React.ReactNode }) => {
-  // const tabs = [{text:'Components',icon}, 'Pages', 'Screens'];
   // Tab configuration
   const tabs = useMemo(
     () => [
@@ -88,6 +87,7 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
     ],
     []
   );
+  const [initialized, setInitialized] = useState(false);
   const [activeLoginDialog, setActiveLoginDialog] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState('HOME');
   const [currentScreen, setCurrentScreen] = useState('COMPONENT');
@@ -171,31 +171,46 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
   }, [userDetails]);
 
   useEffect(() => {
-    const fetchUserDetails = async (token: string) => {
-      await loginUserByToken({ token })
-        .then((res) => {
+    const initializeUser = async () => {
+      const userToken = await getItemFigmaClientStorage('jsToken');
+      if (userToken) {
+        try {
+          const res = await loginUserByToken({ token: userToken });
           setItemFigmaClientStorage('jsToken', res?.data?.token);
           setItemFigmaClientStorage('user', JSON.stringify(res?.data));
           setItemFigmaClientStorage('userId', JSON.stringify(res?.data?._id));
           setUserDetails(res?.data?.user);
-        })
-        .catch((err) => {
-          console.log('err', 'err in logging user by token');
-        });
+        } catch (err) {
+          console.log('Error in logging user by token', err);
+          // Clear invalid token
+          await removeItemFigmaClientStorage('jsToken');
+          setUserDetails(null);
+        }
+      } else {
+        setUserDetails(null);
+      }
     };
 
-    const userToken: any = getItemFigmaClientStorage('jsToken');
-    if (userToken) {
-      fetchUserDetails(userToken);
-    } else {
-      removeItemFigmaClientStorage('jsToken');
-    }
+    initializeUser();
   }, []);
+
+  useEffect(() => {
+    if (!initialized) {
+      const loadPersistedData = async () => {
+        const savedUser = await getItemFigmaClientStorage('user');
+        if (savedUser) {
+          setUserDetails(JSON.parse(savedUser));
+        }
+        setInitialized(true);
+      };
+      loadPersistedData();
+    }
+  }, [initialized]);
 
   useEffect(() => {
     fetchCollections({ type: currentScreen });
     fetchCategories({ type: `${currentScreen}_CATEGORY` });
-  }, [currentScreen]);
+  }, [currentScreen, fetchCollections, fetchCategories]);
 
   const globalContextProps = useMemo(
     () => ({
@@ -243,46 +258,27 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
     }),
     [
       currentScreen,
-      setCurrentScreen,
       activeTab,
-      setActiveTab,
       collections,
       categories,
       selectedCollection,
-      setSelectedCollection,
       selectedCategory,
-      setSelectedCategory,
       showFreeOnly,
-      setShowFreeOnly,
       searchQuery,
-      setSearchQuery,
       localSearch,
-      setLocalSearch,
       viewMode,
-      setViewMode,
       loading,
-      setLoading,
       hasMore,
-      resetFilters,
       collectionDropdownOpen,
-      setCollectionDropdownOpen,
       categoryDropdownOpen,
-      setCategoryDropdownOpen,
       tabs,
       isSubscribed,
-      setIsSubscribed,
       userSubscriptions,
-      setUserSubscriptions,
       componentCopiedpopupVisible,
-      setComponentCopiedpopupVisible,
       copiedFigmaDesignMessage,
-      setCopiedFigmaDesignMessage,
       activeLoginDialog,
-      setActiveLoginDialog,
       userDetails,
-      setUserDetails,
       currentPage,
-      setCurrentPage,
     ]
   );
 

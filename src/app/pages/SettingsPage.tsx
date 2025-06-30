@@ -8,9 +8,27 @@ import SettingBottomImagePNG from '../assets/settingBottomImagePNG.png';
 import FavoriteIconSvg from '../assets/icons/FavoriteIconSvg';
 import SupportHeadphoneIcon from '../assets/icons/SupportHeadphoneIcon';
 import QuestionMarkIconSvg from '../assets/icons/QuestionMarkIconSvg';
+import { removeItemFigmaClientStorage } from '../utils/storage';
 
 const SettingsPage = () => {
-  const { setCurrentPage } = useGlobalContext();
+  const { setCurrentPage, userDetails, setUserDetails } = useGlobalContext();
+
+  // Calculate all fallback values
+  const avatarSrc = userDetails?.avatar || userDetails?.secondaryAvatar || UserImage;
+  const userName =
+    userDetails?.firstName && userDetails?.lastName ? `${userDetails.firstName} ${userDetails.lastName}` : 'David Kim';
+  const userEmail = userDetails?.email || 'david23@gmail.com';
+
+  const handleLogout = async () => {
+    await Promise.all([
+      removeItemFigmaClientStorage('jsToken'),
+      removeItemFigmaClientStorage('user'),
+      removeItemFigmaClientStorage('userId'),
+    ]);
+    setUserDetails(null);
+    setCurrentPage('HOME');
+  };
+
   return (
     <div className="setting_container">
       <div className="setting_head">
@@ -27,13 +45,25 @@ const SettingsPage = () => {
       <div className="setting_mid_container">
         <div className="setting_user_details">
           <div className="setting_user_img">
-            <img src={UserImage} alt="profile" />
+            <div style={{ width: '50px', height: '50px' }}>
+              <img
+                src={avatarSrc}
+                style={{
+                  borderRadius: '50%',
+                  objectFit: 'cover',
+                  objectPosition: 'center',
+                  width: '50px',
+                  height: '50px',
+                }}
+                alt="Profile"
+              />
+            </div>
             <div>
-              <p className="setting_username">David Kim</p>
-              <p className="setting_email">david23@gmail.com</p>
+              <p className="setting_username">{userName}</p>
+              <p className="setting_email">{userEmail}</p>
             </div>
           </div>
-          <button>
+          <button onClick={handleLogout}>
             <span>
               <SignoutIconSvg />
             </span>

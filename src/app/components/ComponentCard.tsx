@@ -7,7 +7,7 @@ import CopyIconSvg from '../assets/icons/CopyIconSvg';
 import FavoriteIconSvg from '../assets/icons/FavoriteIconSvg';
 
 const ComponentCard = ({ card }) => {
-  const { setActiveLoginDialog, viewMode, isSubscribed, setCopiedFigmaDesignMessage, setComponentCopiedpopupVisible } =
+  const { setActiveLoginDialog,activeTab, viewMode, isSubscribed, setCopiedFigmaDesignMessage, setComponentCopiedpopupVisible } =
     useGlobalContext();
   const [copyLoading, setCopyLoading] = useState<boolean>(false);
 
@@ -72,6 +72,15 @@ const ComponentCard = ({ card }) => {
     setCopyLoading(false);
   };
 
+   // Image Handling based on tab
+  let imageUrl = '';
+
+  if (activeTab === 0) {
+    imageUrl = card?.documents?.[0]?.url || '';
+  } else if (activeTab === 1 || activeTab === 2) {
+    imageUrl = card?.thumbnailUrl || '';
+  }
+
   return (
     <div className={`component-card ${viewMode === 'list' ? 'list-layout' : ''}`}>
       <div className={`component-preview ${card.backgroundClass} ${viewMode === 'list' ? 'list-view' : ''}`}>
@@ -102,7 +111,7 @@ const ComponentCard = ({ card }) => {
           </div>
         )}
         <div>
-          <img src={card?.documents[0]?.url} alt={card.title} style={{ width: '100%', borderRadius: '9.05px' }} />
+          <img src={imageUrl} alt={card.title} style={{ width: '100%', borderRadius: '9.05px' }} />
         </div>
 
         {/* Overlay */}

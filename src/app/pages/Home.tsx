@@ -9,8 +9,8 @@ import { getAllComponents } from '../services/component';
 import NoResultUI from '../components/NoResultUI';
 import SearchComponent from '../components/SearchComponent';
 import { useGlobalContext } from '../context/GlobalContext';
-import FigmaDesignCopySuccessPopup from '../components/FigmaDesignCopySuccessPopup';
-import LoginDialog from '../components/LoginDialog';
+import { getAllPages } from '../services/page';
+import { getAllScreens } from '../services/screen';
 
 const ROWS_PER_PAGE = 20;
 
@@ -32,11 +32,15 @@ function Home() {
     setCollectionDropdownOpen,
     categoryDropdownOpen,
     setCategoryDropdownOpen,
+    activeTab,
   } = useGlobalContext();
   const [page, setPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState(true);
   const [loadMoreLoading, setLoadMoreLoading] = useState(false);
-  const [componentsData, setComponentsData] = useState<{ paginatedComponents: any[] }>({ paginatedComponents: [] });
+  // const [currentTabDataList, setCurrentTabDataList] = useState<{ paginatedComponents: any[] }>({
+  //   paginatedComponents: [],
+  // });
+  const [currentTabDataList, setCurrentTabDataList] = useState<any[]>([]);
 
   const loaderRef = useRef<HTMLDivElement>(null);
 
@@ -47,23 +51,48 @@ function Home() {
   };
 
   // Data fetching with filters
-  const getComponents = async (filters?: any, resetPage = false) => {
+  const fetchTabWiseData = async (filters?: any, resetPage = false) => {
     try {
-      const res: any = await getAllComponents(filters);
-      if (resetPage || page === 1) {
-        setComponentsData(res);
-      } else {
-        setComponentsData((prevList: any) => ({
-          paginatedComponents: [...(prevList?.paginatedComponents || []), ...(res?.paginatedComponents || [])],
-        }));
+      const apiFunction = getCorrectApiFunction();
+      const res: any = await apiFunction(filters);
+
+      // Har tab ke hisab se correct data extract karo
+     let extractedData = [];
+      let totalCount = 0;
+
+      if (activeTab === 0) {
+        extractedData = res.paginatedComponents || [];
+        totalCount = res.totalComponents || 0;
+      } else if (activeTab === 1) {
+        extractedData = res.paginatedPages || [];
+        totalCount = res.totalPages || 0;
+      } else if (activeTab === 2) {
+        extractedData = res.paginatedScreens || [];
+        totalCount = res.totalScreens || 0;
       }
-      setHasMore(res.totalComponents > ROWS_PER_PAGE * page);
+
+      if (resetPage) {
+        // setCurrentTabDataList(res);
+        setCurrentTabDataList(extractedData);
+      } else {
+        // setCurrentTabDataList((prevList: any) => ({
+        //   paginatedComponents: [...(prevList?.paginatedComponents || []), ...(res?.paginatedComponents || [])],
+        // }));
+        setCurrentTabDataList((prevList: any) => [...(prevList || []), ...extractedData]);
+      }
+      setHasMore(totalCount > ROWS_PER_PAGE * filters.page);
     } catch (err) {
       console.error('Error fetching filtered components:', err);
     } finally {
       setLoading(false);
       setLoadMoreLoading(false);
     }
+  };
+
+  const getCorrectApiFunction = () => {
+    if (activeTab === 0) return getAllComponents;
+    if (activeTab === 1) return getAllPages;
+    if (activeTab === 2) return getAllScreens;
   };
 
   // Load more handler
@@ -108,22 +137,22 @@ function Home() {
       pageSize: ROWS_PER_PAGE,
       page,
     };
-    getComponents(filters);
+    fetchTabWiseData(filters);
   }, [page]);
 
   // get data on every filter change
   useEffect(() => {
-    setPage(1);
     const filters = {
       collections: selectedCollection !== 'all' ? [selectedCollection] : [],
       categories: selectedCategory !== 'all' ? [selectedCategory] : [],
       licenses: showFreeOnly == true ? ['Free'] : ['Premium', 'Free'],
       searchBy: searchQuery,
       pageSize: ROWS_PER_PAGE,
-      page,
+      page: 1,
     };
-    getComponents(filters, true);
-  }, [selectedCollection, selectedCategory, showFreeOnly, searchQuery]);
+    setPage(1);
+    fetchTabWiseData(filters, true);
+  }, [selectedCollection, selectedCategory, showFreeOnly, searchQuery, activeTab]);
 
   const isAnyFilterApplied =
     selectedCollection !== 'all' || selectedCategory !== 'all' || showFreeOnly === true || searchQuery.trim() !== '';
@@ -185,11 +214,11 @@ function Home() {
           <div className="content-section">
             {loading ? (
               <div> Loading...</div>
-            ) : componentsData?.paginatedComponents.length === 0 ? (
+            ) : currentTabDataList?.length === 0 ? (
               <NoResultUI />
             ) : (
               <div className={viewMode === 'grid' ? 'components-grid' : 'components-list'}>
-                {componentsData?.paginatedComponents.map((card) => (
+                {currentTabDataList?.map((card) => (
                   <ComponentCard key={card.id} card={card} />
                 ))}
               </div>
