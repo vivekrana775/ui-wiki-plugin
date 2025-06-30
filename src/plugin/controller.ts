@@ -1,6 +1,7 @@
 figma.showUI(__html__, {
-  width: 500,
-  height: 700,
+  width: 574,
+  height: 767,
+  themeColors:true
 });
 
 figma.ui.onmessage = async(msg) => {
@@ -43,29 +44,12 @@ figma.ui.onmessage = async(msg) => {
     await figma.clientStorage.setAsync(msg.key, null);
   }
 
-  // if (msg.type === "copy-to-clipboard") {
-  //   // console.log("msg.content===>", msg.content)
-  //   await figma.clipboard.writeText(msg.content);
-  //   figma.notify("Component copied to clipboard!");
-  // }
-  // if (msg.type === "copy-to-clipboard") {
-  //   console.log("Message from UI:", msg);
-  //   console.log("Copy to clipboard called with content:", msg.content);
-  //   await figma.clipboard.writeText(msg.content);
-  //   // await figma.clipboard.writeText("hello dosto");
-  //   // figma.notify("Component copied to clipboard!");
-  //   figma.notify("###################################");
-  // }
-if (msg.type === "copy-to-clipboard") {
-  console.log("Copy to clipboard called with content:", msg.content);
-  try {
-    await figma.clipboard.writeText("hello dosto");
+  if (msg.type === "copy-to-clipboard") {
+    console.log("Copy to clipboard called with content:", msg.content);
+    await figma.clipboard.writeText(msg.content);
+    // figma.notify("Component copied to clipboard!");
     figma.notify("###################################");
-  } catch (err) {
-    console.log("Clipboard error:", err);
-    figma.notify("Clipboard write failed!");
   }
-}
   // if (msg.type === "show-notification") {
   //   figma.notify(msg.content);
   // }

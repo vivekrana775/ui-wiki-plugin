@@ -1,41 +1,44 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useGlobalContext } from '../context/GlobalContext';
 import { getItemFigmaClientStorage } from '../utils/storage';
 import { getFigmaSouceCodeById } from '../services/component';
+import PremiumCrownSvgIcon from '../assets/icons/PremiumCrownSvgIcon';
+import CopyIconSvg from '../assets/icons/CopyIconSvg';
+import FavoriteIconSvg from '../assets/icons/FavoriteIconSvg';
 
 const ComponentCard = ({ card }) => {
-  const { viewMode, isSubscribed } = useGlobalContext();
+  const { setActiveLoginDialog, viewMode, isSubscribed, setCopiedFigmaDesignMessage, setComponentCopiedpopupVisible } =
+    useGlobalContext();
   const [copyLoading, setCopyLoading] = useState<boolean>(false);
 
   const handleCopyFigmaCode = async () => {
     setCopyLoading(true);
 
-    // const token = await getItemFigmaClientStorage('jsToken');
-    // if (!token) {
-    //   alert('Please login first.');
-    //   setCopyLoading(false);
-    //   return;
-    // }
+    const token = await getItemFigmaClientStorage('jsToken');
+    if (!token) {
+      // alert('Please login first.');
+      setActiveLoginDialog(true);
+      setCopyLoading(false);
+      return;
+    }
 
     if (isSubscribed || card?.license === 'FREE') {
+      setCopiedFigmaDesignMessage('Component copied to clipboard');
+      setComponentCopiedpopupVisible(true);
+      return;
       try {
-        console.log('1');
         const componentSourceCode: any = await getFigmaSouceCodeById(card?.id);
         const htmlContent = componentSourceCode?.data?.figmaCode || '';
-        console.log('2');
 
         if (!htmlContent) {
-          console.log('3');
           alert('No content to copy.');
           setCopyLoading(false);
           return;
         }
-        console.log('4');
         // Create a Blob with the HTML content and specify the MIME type as 'text/html'
         // const blob = new Blob([htmlContent], { type: 'text/html' });
         // const clipboardItem = new ClipboardItem({ 'text/html': blob });
         // Copy the Blob to the clipboard
-
         // navigator.clipboard
         //   .write([clipboardItem])
         //   .then(() => {
@@ -72,29 +75,46 @@ const ComponentCard = ({ card }) => {
   return (
     <div className={`component-card ${viewMode === 'list' ? 'list-layout' : ''}`}>
       <div className={`component-preview ${card.backgroundClass} ${viewMode === 'list' ? 'list-view' : ''}`}>
-        {/* copy icon  */}
-        <div onClick={handleCopyFigmaCode} className="copy_icon">
-          <span>Copy</span>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-            <rect width="24" height="24" fill="white" opacity="0.01" />
-            <path
-              d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"
-              fill="white"
-            />
+        {/* card vector  */}
+        <div className="component_card_vector">
+          <svg width="90" height="85" viewBox="0 0 90 85" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 0H90V85L44.1509 39.9057L0 0Z" fill="url(#paint0_linear_9134_19388)" />
+            <defs>
+              <linearGradient
+                id="paint0_linear_9134_19388"
+                x1="90"
+                y1="0"
+                x2="4.30478e-07"
+                y2="85"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop />
+                <stop offset="0.475962" stop-opacity="0" />
+              </linearGradient>
+            </defs>
           </svg>
         </div>
 
         {/* Premium Badge */}
         {card.license === 'PREMIUM' && (
           <div className="premium-badge">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M2 6L7 12L12 6L17 12L22 6V20H2V6Z" fill="white" />
-              <path d="M4 18H20V8.83L17 12L12 6L7 12L4 8.83V18Z" fill="none" />
-            </svg>
+            <PremiumCrownSvgIcon width="27.67px" height="27.67px" />
           </div>
         )}
         <div>
-          <img src={card?.documents[0]?.url} alt={card.title} style={{ width: '100%', borderRadius: '8px' }} />
+          <img src={card?.documents[0]?.url} alt={card.title} style={{ width: '100%', borderRadius: '9.05px' }} />
+        </div>
+
+        {/* Overlay */}
+        <div className="overlay">
+          <div className="overlay-icons">
+            <button title="Favourite">
+              <FavoriteIconSvg color='#0C0C0C'/>
+            </button>
+            <button onClick={handleCopyFigmaCode} title="Copy">
+              <CopyIconSvg />
+            </button>
+          </div>
         </div>
       </div>
     </div>

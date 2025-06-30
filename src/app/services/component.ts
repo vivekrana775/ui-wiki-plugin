@@ -67,7 +67,7 @@ export const getFigmaSouceCodeById = (objectId: string) => {
       url: `${HOST_NAME}/figma-source/${objectId}`,
       headers: {
         Authorization: `Bearer ${getItemFigmaClientStorage("jsToken")}`,
-        // Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjY4MjZkYjY4OTM5OGYzNzAwNDA5MTIyZCIsImlkIjoiNjgyNmRiNjg5Mzk4ZjM3MDA0MDkxMjJkIn0sImlhdCI6MTc1MDg0ODg1MiwiZXhwIjoxNzU4NjI0ODUyfQ.-sFfsYvGwKH-2SbP8ixC18AmsUlZ4maHVmbX6DbLxsY`,
+        // Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjY4MjZkYjY4OTM5OGYzNzAwNDA5MTIyZCIsImlkIjoiNjgyNmRiNjg5Mzk4ZjM3MDA0MDkxMjJkIn0sImlhdCI6MTc1MDkyNzgwNiwiZXhwIjoxNzU4NzAzODA2fQ.B_EQ84wAXcBew8okpxsYiWVCsRyh1G4ALG3DisrmVbA`,
       },
     };
 

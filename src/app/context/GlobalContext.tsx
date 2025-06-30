@@ -4,12 +4,15 @@ import { getAllConstantValues } from '../services/constantValues';
 import { loginUserByToken } from '../services/authentication';
 import { getItemFigmaClientStorage, removeItemFigmaClientStorage, setItemFigmaClientStorage } from '../utils/storage';
 import { getUserById } from '../services/user';
+import ComponentIcon from '../assets/icons/ComponentIcon';
+import PagesSvgIcon from '../assets/icons/PagesSvgIcon';
+import ScreensSvgIcon from '../assets/icons/ScreensSvgIcon';
 
 interface GlobalContextProps {
   currentScreen: string;
   setCurrentScreen: (screen: string) => void;
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
+  activeTab: number;
+  setActiveTab: (tab: number) => void;
   collections: any;
   categories: any;
   selectedCollection: string;
@@ -37,6 +40,16 @@ interface GlobalContextProps {
   setIsSubscribed: any;
   userSubscriptions: any;
   setUserSubscriptions: any;
+  componentCopiedpopupVisible: any;
+  setComponentCopiedpopupVisible: any;
+  copiedFigmaDesignMessage: any;
+  setCopiedFigmaDesignMessage: any;
+  activeLoginDialog: boolean;
+  setActiveLoginDialog: any;
+  userDetails: any;
+  setUserDetails: any;
+  currentPage: any;
+  setCurrentPage: any;
 }
 
 export const GlobalContext = createContext<GlobalContextProps | undefined>(undefined);
@@ -50,9 +63,35 @@ export const useGlobalContext = () => {
 };
 
 export const GlobalContextProvider = ({ children }: { children: React.ReactNode }) => {
-  const tabs = ['Components', 'Pages', 'Screens'];
+  // const tabs = [{text:'Components',icon}, 'Pages', 'Screens'];
+  // Tab configuration
+  const tabs = useMemo(
+    () => [
+      {
+        label: 'Components',
+        icon: <ComponentIcon color={'#8B8B8B'} />,
+        activeIcon: <ComponentIcon color={'#0C0C0C'} />,
+        value: 0,
+      },
+      {
+        label: 'Pages',
+        icon: <PagesSvgIcon color={'#8B8B8B'} />,
+        activeIcon: <PagesSvgIcon color={'#0C0C0C'} />,
+        value: 1,
+      },
+      {
+        label: 'Screens',
+        icon: <ScreensSvgIcon color={'#8B8B8B'} />,
+        activeIcon: <ScreensSvgIcon color={'#0C0C0C'} />,
+        value: 2,
+      },
+    ],
+    []
+  );
+  const [activeLoginDialog, setActiveLoginDialog] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState('HOME');
   const [currentScreen, setCurrentScreen] = useState('COMPONENT');
-  const [activeTab, setActiveTab] = useState('Components');
+  const [activeTab, setActiveTab] = useState<number>(0);
   const [collections, setCollections] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [selectedCollection, setSelectedCollection] = useState('all');
@@ -68,6 +107,9 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
   const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
   const [userDetails, setUserDetails] = useState<any>('');
   const [userSubscriptions, setUserSubscriptions] = useState<any>([]);
+  // State to manage the visibility of the copy success popup
+  const [copiedFigmaDesignMessage, setCopiedFigmaDesignMessage] = useState<any>('');
+  const [componentCopiedpopupVisible, setComponentCopiedpopupVisible] = useState(false);
 
   const fetchCollections = useCallback(async (filters?: any) => {
     setLoading(true);
@@ -188,6 +230,16 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
       setIsSubscribed,
       userSubscriptions,
       setUserSubscriptions,
+      componentCopiedpopupVisible,
+      setComponentCopiedpopupVisible,
+      copiedFigmaDesignMessage,
+      setCopiedFigmaDesignMessage,
+      activeLoginDialog,
+      setActiveLoginDialog,
+      userDetails,
+      setUserDetails,
+      currentPage,
+      setCurrentPage,
     }),
     [
       currentScreen,
@@ -221,6 +273,16 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
       setIsSubscribed,
       userSubscriptions,
       setUserSubscriptions,
+      componentCopiedpopupVisible,
+      setComponentCopiedpopupVisible,
+      copiedFigmaDesignMessage,
+      setCopiedFigmaDesignMessage,
+      activeLoginDialog,
+      setActiveLoginDialog,
+      userDetails,
+      setUserDetails,
+      currentPage,
+      setCurrentPage,
     ]
   );
 

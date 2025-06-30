@@ -3,6 +3,11 @@ declare module '*.svg' {
   export default content;
 }
 
+declare module '*.png' {
+  const value: string;
+  export default value;
+}
+
 interface Clipboard {
   writeText: (text: string) => Promise<void>;
 }
