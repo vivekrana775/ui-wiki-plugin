@@ -1,6 +1,6 @@
 import React from 'react';
 
-const FavoriteIconSvg = ({width="28" ,height="28", color="0C0C0C" }) => {
+const FavoriteIconSvg = ({ width = '28', height = '28', color = '0C0C0C' }) => {
   return (
     <svg width={width} height={height} viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path

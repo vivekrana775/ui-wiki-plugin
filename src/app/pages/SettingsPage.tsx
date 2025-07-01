@@ -72,7 +72,7 @@ const SettingsPage = () => {
         </div>
         <div className="setting_support_container">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div className="setting_support_card">
+            <div onClick={()=>setCurrentPage("FAVORITES")} className="setting_support_card">
               <div className="setting_card">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <span>

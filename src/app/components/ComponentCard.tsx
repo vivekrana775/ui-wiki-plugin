@@ -1,15 +1,32 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useGlobalContext } from '../context/GlobalContext';
 import { getItemFigmaClientStorage } from '../utils/storage';
-import { getFigmaSouceCodeById } from '../services/component';
+import { addToFavorite, getFigmaSouceCodeById, removeFromFavorite } from '../services/component';
 import PremiumCrownSvgIcon from '../assets/icons/PremiumCrownSvgIcon';
 import CopyIconSvg from '../assets/icons/CopyIconSvg';
 import FavoriteIconSvg from '../assets/icons/FavoriteIconSvg';
+import FilledLikeIconSvg from '../assets/icons/FilledLikeIconSvg';
+import DefaultLoading from '../shared/loading/DefaultLoading';
 
 const ComponentCard = ({ card }) => {
-  const { setActiveLoginDialog,activeTab, viewMode, isSubscribed, setCopiedFigmaDesignMessage, setComponentCopiedpopupVisible } =
-    useGlobalContext();
+  const {
+    setActiveLoginDialog,
+    activeTab,
+    viewMode,
+    isSubscribed,
+    favoriteIds,
+    favoritePagesIds,
+    favoriteScreensIds,
+    setFavoriteIds,
+    setFavoritePagesIds,
+    setFavoriteScreensIds,
+    setCopiedFigmaDesignMessage,
+    setComponentCopiedpopupVisible,
+  } = useGlobalContext();
   const [copyLoading, setCopyLoading] = useState<boolean>(false);
+  const [likeDislikeLoading, setLikeDislikeLoading] = useState(false);
+  const [animateLike, setAnimateLike] = useState(false);
+  const [isLiked, setIsLiked] = useState<boolean>(false);
 
   const handleCopyFigmaCode = async () => {
     setCopyLoading(true);
@@ -72,7 +89,71 @@ const ComponentCard = ({ card }) => {
     setCopyLoading(false);
   };
 
-   // Image Handling based on tab
+  const handleToggleLike = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setLikeDislikeLoading(true);
+
+    // Check if user is logged in
+    if (!(await getItemFigmaClientStorage('jsToken'))) {
+      setActiveLoginDialog(true);
+      setLikeDislikeLoading(false);
+      return;
+    }
+
+    // change type and logic accoridng to active tab
+    let entityType = 'COMPONENT';
+    let activeFavoriteList = favoriteIds;
+    let setActiveFavoriteList = setFavoriteIds;
+
+    if (activeTab === 1) {
+      entityType = 'PAGE';
+      activeFavoriteList = favoritePagesIds;
+      setActiveFavoriteList = setFavoritePagesIds;
+    } else if (activeTab === 2) {
+      entityType = 'SCREEN';
+      activeFavoriteList = favoriteScreensIds;
+      setActiveFavoriteList = setFavoriteScreensIds;
+    }
+
+    try {
+      if (isLiked) {
+        await removeFromFavorite({ entityId: card?.id, entityType });
+        setActiveFavoriteList((prev) => prev.filter((fav) => fav.id !== card?.id));
+      } else {
+        await addToFavorite({ entityId: card?.id, entityType });
+        setActiveFavoriteList((prev) => [...prev, { id: card?.id }]);
+      }
+      setIsLiked((prev) => !prev);
+    } catch (error) {
+      // toastError("Error", "Failed to update like status.");
+      setIsLiked((prev) => !prev); // Revert the toggle on error
+    } finally {
+      setTimeout(() => {
+        setLikeDislikeLoading(false);
+        if (!isLiked) {
+          setAnimateLike(true);
+        }
+      }, 1000); // show loading indicator for 1 sec
+    }
+  };
+
+  useEffect(() => {
+    let activeFavoriteList = favoriteIds;
+    if (activeTab === 1) activeFavoriteList = favoritePagesIds;
+    if (activeTab === 2) activeFavoriteList = favoriteScreensIds;
+    setIsLiked(activeFavoriteList.some((fav) => fav.id === card?.id));
+  }, [favoriteIds, favoritePagesIds, favoriteScreensIds, card?.id, activeTab]);
+
+  // Reset animation after it completes
+  useEffect(() => {
+    if (animateLike) {
+      const timer = setTimeout(() => setAnimateLike(false), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [animateLike]);
+
+  // Image Handling based on tab
   let imageUrl = '';
 
   if (activeTab === 0) {
@@ -117,9 +198,49 @@ const ComponentCard = ({ card }) => {
         {/* Overlay */}
         <div className="overlay">
           <div className="overlay-icons">
-            <button title="Favourite">
-              <FavoriteIconSvg color='#0C0C0C'/>
-            </button>
+            {/* {!card?.isFavoriteScreen === true && ( */}
+            <div
+              onClick={(e: any) => {
+                !likeDislikeLoading && handleToggleLike(e);
+              }}
+              style={{
+                width: '46px',
+                height: '46px',
+                borderRadius: '50%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: '#FFFFFF',
+                cursor: likeDislikeLoading ? 'default' : 'pointer',
+              }}
+            >
+              <div
+                className={animateLike ? 'scale-up' : ''}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                {likeDislikeLoading ? (
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      height: '100vh',
+                    }}
+                  >
+                    <DefaultLoading size="24px" color={!isLiked ? '#E25454' : 'black'} />
+                  </div>
+                ) : isLiked ? (
+                  <FilledLikeIconSvg color="#E25454" />
+                ) : (
+                  <FavoriteIconSvg color="#0C0C0C" />
+                )}
+              </div>
+            </div>
+            {/* )} */}
             <button onClick={handleCopyFigmaCode} title="Copy">
               <CopyIconSvg />
             </button>

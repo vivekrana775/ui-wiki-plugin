@@ -3,13 +3,14 @@ import { HOST_NAME } from "../utils/constant";
 import { getItemFigmaClientStorage } from "../utils/storage";
 
 export const getUserById = async (id: string) => {
+   const token = await getItemFigmaClientStorage("jsToken")
   try {
     let config = {
       method: "get",
       maxBodyLength: Infinity,
       url: `${HOST_NAME}/user/${id}`,
       headers: {
-        Authorization: `Bearer ${getItemFigmaClientStorage("jsToken")}`,
+        Authorization: `Bearer ${token}`,
       },
     };
 

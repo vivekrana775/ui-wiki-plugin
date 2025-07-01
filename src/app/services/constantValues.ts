@@ -2,7 +2,8 @@ import axios from "axios";
 import { HOST_NAME } from "../utils/constant";
 import { getItemFigmaClientStorage } from "../utils/storage";
 
-export const getAllConstantValues = (filters?: any) => {
+export const getAllConstantValues = async(filters?: any) => {
+  const token = await getItemFigmaClientStorage("jsToken")
   return new Promise<any>((resolve, reject) => {
     let config = {
       method: "get",
@@ -13,7 +14,7 @@ export const getAllConstantValues = (filters?: any) => {
         filters?.type
       }`,
       headers: {
-        Authorization: `Bearer ${getItemFigmaClientStorage("jsToken")}`,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     };

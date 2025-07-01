@@ -7,6 +7,7 @@ import { getUserById } from '../services/user';
 import ComponentIcon from '../assets/icons/ComponentIcon';
 import PagesSvgIcon from '../assets/icons/PagesSvgIcon';
 import ScreensSvgIcon from '../assets/icons/ScreensSvgIcon';
+import { getUserFavoriteIds } from '../services/component';
 
 interface GlobalContextProps {
   currentScreen: string;
@@ -50,6 +51,13 @@ interface GlobalContextProps {
   setUserDetails: (val: any) => void;
   currentPage: string;
   setCurrentPage: (val: string) => void;
+  favoriteIds: any;
+  favoritePagesIds: any;
+  favoriteScreensIds: any;
+  setFavoriteIds: any;
+  setFavoritePagesIds: any;
+  setFavoriteScreensIds: any;
+  fetchUserFavoriteIds:any;
 }
 
 export const GlobalContext = createContext<GlobalContextProps | undefined>(undefined);
@@ -107,6 +115,9 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
   const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
   const [userDetails, setUserDetails] = useState<any>('');
   const [userSubscriptions, setUserSubscriptions] = useState<any>([]);
+  const [favoriteIds, setFavoriteIds] = useState<any>([]);
+  const [favoritePagesIds, setFavoritePagesIds] = useState<any>([]);
+  const [favoriteScreensIds, setFavoriteScreensIds] = useState<any>([]);
   // State to manage the visibility of the copy success popup
   const [copiedFigmaDesignMessage, setCopiedFigmaDesignMessage] = useState<any>('');
   const [componentCopiedpopupVisible, setComponentCopiedpopupVisible] = useState(false);
@@ -207,8 +218,27 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
     }
   }, [initialized]);
 
+  const fetchUserFavoriteIds = useCallback(async () => {
+    const token = await getItemFigmaClientStorage('jsToken');
+    setLoading(true);
+    if (!token) return;
+
+    await getUserFavoriteIds()
+      .then((res: any) => {
+        setLoading(false);
+        setFavoriteIds(res?.data?.favoriteComponents || []);
+        setFavoritePagesIds(res?.data?.favoritePages || []);
+        setFavoriteScreensIds(res?.data?.favoriteScreens || []);
+      })
+      .catch((err) => {
+        console.log("err");
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
   useEffect(() => {
     fetchCollections({ type: currentScreen });
+     fetchUserFavoriteIds();
     fetchCategories({ type: `${currentScreen}_CATEGORY` });
   }, [currentScreen, fetchCollections, fetchCategories]);
 
@@ -255,6 +285,13 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
       setUserDetails,
       currentPage,
       setCurrentPage,
+      favoriteIds,
+      favoritePagesIds,
+      favoriteScreensIds,
+      setFavoriteIds,
+      setFavoritePagesIds,
+      setFavoriteScreensIds,
+      fetchUserFavoriteIds,
     }),
     [
       currentScreen,
@@ -279,6 +316,10 @@ export const GlobalContextProvider = ({ children }: { children: React.ReactNode 
       activeLoginDialog,
       userDetails,
       currentPage,
+      favoriteIds,
+      favoritePagesIds,
+      favoriteScreensIds,
+      fetchUserFavoriteIds,
     ]
   );
 

@@ -7,6 +7,7 @@ import FigmaDesignCopySuccessPopup from './components/FigmaDesignCopySuccessPopu
 import LoginDialog from './components/LoginDialog';
 import Home from './pages/Home';
 import SettingsPage from './pages/SettingsPage';
+import FavoritesPage from './pages/FavoritesPage';
 
 function App() {
   const {
@@ -24,6 +25,8 @@ function App() {
         return <Home />;
       case 'SETTINGS':
         return <SettingsPage />;
+      case 'FAVORITES':
+        return <FavoritesPage />;
       default:
         return <Home />;
     }

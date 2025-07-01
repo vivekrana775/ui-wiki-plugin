@@ -136,7 +136,8 @@
     flex-direction: column;
     gap: 16px;
     padding: 0px 20px;
-    margin-bottom: 11px;
+    padding-bottom: 11px;
+    border-bottom: 1px solid #3D3D3D66;
   }
   
   .filters-row {
@@ -438,9 +439,6 @@
   transition: background 0.3s ease;
 }
 
-/* .overlay-icons button:hover {
-  background: rgba(255, 255, 255, 0.3);
-} */
   .component_card_vector{
     position: absolute;
     top: -8px;

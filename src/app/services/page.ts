@@ -2,7 +2,8 @@ import axios from "axios";
 import { HOST_NAME } from "../utils/constant";
 import { getItemFigmaClientStorage } from "../utils/storage";
 
-export const getAllPages = (filters?: any) => {
+export const getAllPages = async(filters?: any) => {
+   const token = await getItemFigmaClientStorage("jsToken")
   return new Promise((resolve, reject) => {
     const pageNumber =
       filters?.page !== "" &&
@@ -45,7 +46,7 @@ export const getAllPages = (filters?: any) => {
         filters?.sortBy || ""
       }`,
       headers: {
-        Authorization: `Bearer ${getItemFigmaClientStorage("jsToken")}`,
+        Authorization: `Bearer ${token}`,
       },
     };
     axios

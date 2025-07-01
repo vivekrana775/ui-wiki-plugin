@@ -2,7 +2,8 @@ import axios from "axios";
 import { HOST_NAME } from "../utils/constant";
 import { getItemFigmaClientStorage } from "../utils/storage";
 
-export const getAllComponents = (filters?: any) => {
+export const getAllComponents = async(filters?: any) => {
+  const token = await getItemFigmaClientStorage('jsToken');
   return new Promise((resolve, reject) => {
     const pageNumber =
       filters?.page !== "" &&
@@ -45,7 +46,7 @@ export const getAllComponents = (filters?: any) => {
         filters?.sortBy || ""
       }`,
       headers: {
-        Authorization: `Bearer ${getItemFigmaClientStorage("jsToken")}`,
+        Authorization: `Bearer ${token}`,
       },
     };
     axios
@@ -59,15 +60,15 @@ export const getAllComponents = (filters?: any) => {
   });
 };
 
-export const getFigmaSouceCodeById = (objectId: string) => {
+export const getFigmaSouceCodeById = async(objectId: string) => {
+  const token = await getItemFigmaClientStorage('jsToken');
   return new Promise((resolve, reject) => {
     const config = {
       method: "get",
       maxBodyLength: Infinity,
       url: `${HOST_NAME}/figma-source/${objectId}`,
       headers: {
-        Authorization: `Bearer ${getItemFigmaClientStorage("jsToken")}`,
-        // Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjY4MjZkYjY4OTM5OGYzNzAwNDA5MTIyZCIsImlkIjoiNjgyNmRiNjg5Mzk4ZjM3MDA0MDkxMjJkIn0sImlhdCI6MTc1MDkyNzgwNiwiZXhwIjoxNzU4NzAzODA2fQ.B_EQ84wAXcBew8okpxsYiWVCsRyh1G4ALG3DisrmVbA`,
+        Authorization: `Bearer ${token}`,
       },
     };
 
@@ -77,6 +78,108 @@ export const getFigmaSouceCodeById = (objectId: string) => {
         resolve(response?.data);
       })
       .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+export const getUserFavoriteIds = async() => {
+  const token = await getItemFigmaClientStorage('jsToken');
+  return new Promise((resolve, reject) => {
+    let config = {
+      method: "get",
+      maxBodyLength: Infinity,
+      url: `${HOST_NAME}/favorite-ids`,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+        resolve(response?.data);
+      })
+      .catch((error) => {
+        console.log("error");
+        reject(error);
+      });
+  });
+};
+
+export const addToFavorite = async(data: any) => {
+  const token = await getItemFigmaClientStorage('jsToken');
+  return new Promise((resolve, reject) => {
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: `${HOST_NAME}/favorite`,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      data: data,
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+        resolve(response?.data);
+      })
+      .catch((error) => {
+        console.log("error");
+        reject(error);
+      });
+  });
+};
+
+export const removeFromFavorite = async(data: any) => {
+  const token = await getItemFigmaClientStorage('jsToken');
+  return new Promise((resolve, reject) => {
+    let config = {
+      method: "delete",
+      maxBodyLength: Infinity,
+      url: `${HOST_NAME}/favorite`,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      data: data,
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+        resolve(response?.data);
+      })
+      .catch((error) => {
+        console.log("error");
+        reject(error);
+      });
+  });
+};
+
+export const getUserFavorites = async() => {
+   const token = await getItemFigmaClientStorage('jsToken');
+  return new Promise((resolve, reject) => {
+    let config = {
+      method: "get",
+      maxBodyLength: Infinity,
+      url: `${HOST_NAME}/favorite`,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+        resolve(response?.data);
+      })
+      .catch((error) => {
+        console.log("error");
         reject(error);
       });
   });
