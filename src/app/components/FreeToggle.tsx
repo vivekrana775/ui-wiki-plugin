@@ -5,7 +5,8 @@ export default function FreeToggle() {
   const { showFreeOnly, setShowFreeOnly } = useGlobalContext();
 
   const toggleSwitch = () => {
-    setShowFreeOnly((prev: boolean) => !prev);
+    //@ts-ignore
+    setShowFreeOnly((prev) => !prev);
   };
 
   return (
