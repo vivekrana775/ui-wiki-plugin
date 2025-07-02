@@ -3,7 +3,7 @@ import GoogleIcon from '../assets/icons/GoogleIcon';
 import TextInput from '../shared/components/TextInput';
 import { loginUser } from '../services/authentication';
 import { isValidEmail } from '../utils/extensions';
-import { handleGoogleSignIn } from '../utils/constant';
+import { FRONTEND_HOST_NAME, handleGoogleSignIn } from '../utils/constant';
 import EyeOpenIcon from '../assets/icons/EyeOpenIcon';
 import EyeOffIcon from '../assets/icons/EyeOffIcon';
 import ErrorMessageIcon from '../assets/icons/ErrorMessageIcon';
@@ -12,6 +12,7 @@ import { setItemFigmaClientStorage } from '../utils/storage';
 import CancelIconSvg from '../assets/icons/CancelIconSvg';
 import UiWikiLogoSvg from '../assets/icons/UiWikiLogoSvg';
 import { ButtonPrimary, ButtonSecondary } from '../shared/components/Buttons';
+import DefaultLoading from '../shared/loading/DefaultLoading';
 
 type Props = {
   activeDialog: any;
@@ -142,492 +143,467 @@ const LoginDialog: React.FC<Props> = (props) => {
             zIndex: 6000,
           }}
         >
-          {/* <div
+          <div
+            className="custom-scrollbar"
             style={{
-              position: 'relative',
               display: 'flex',
-              // backgroundColor: "#1B1B1B",
+              flexDirection: 'column',
+              width: '100%',
               justifyContent: 'center',
-              maxWidth: '426px',
-              width: '100vw',
-              minHeight: '100vh',
-              height: '100%',
-              // paddingLeft: '0px',
-              // paddingRight: '0px',
-              // paddingBottom: '0px',
+              alignItems: 'center',
+              height: '100vh',
+              // backgroundColor: "#1B1B1B",
+              scrollbarWidth: 'none',
+              // paddingTop: '60px',
+              // paddingBottom: '40px',
             }}
-          > */}
-            {/* <div
+          >
+            {/* yaha se content wala div start hai   */}
+            <div
+              ref={popupRef}
               style={{
+                maxWidth: '426px',
                 minHeight: 'auto',
+                height: 'auto',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
                 width: '100%',
-                margin: 0,
-                padding: 0,
+                alignItems: 'center',
+                gap: '24px',
+                border: '1px solid #3D3D3D',
                 boxSizing: 'border-box',
+                borderRadius: '24px',
+                backgroundColor: '#1B1B1B',
+                padding: '40px',
+                position: 'relative',
               }}
-            > */}
+            >
               <div
-                className="custom-scrollbar"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  props?.handleDialog();
+                }}
                 style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  width: '100%',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  height: '100vh',
-                  // backgroundColor: "#1B1B1B",
-                  scrollbarWidth: 'none',
-                  // paddingTop: '60px',
-                  // paddingBottom: '40px',
+                  position: 'absolute',
+                  right: '24px',
+                  top: '24px',
+                  cursor: 'pointer',
+                  color: 'white',
+                  opacity: '100%',
                 }}
               >
-                {/* yaha se content wala div start hai   */}
+                <CancelIconSvg width="18" height="18" />
+              </div>
+              <div
+                onClick={() => {
+                  setCurrentPage('HOME');
+                  setActiveLoginDialog(false);
+                }}
+                style={{
+                  width: 'fit-content',
+                  cursor: 'pointer',
+                }}
+              >
+                <UiWikiLogoSvg />
+              </div>
+              <div
+                style={{
+                  margin: '0',
+                  padding: '0',
+                  boxSizing: 'border-box',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '24px',
+                  alignItems: 'center',
+                  width: '100%',
+                  justifyContent: 'center',
+                }}
+              >
                 <div
-                  ref={popupRef}
                   style={{
-                    maxWidth: '426px',
-                    minHeight: 'auto',
-                    height: 'auto',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'center',
+                    textAlign: 'center',
                     width: '100%',
-                    alignItems: 'center',
-                    gap: '24px',
-                    border: '1px solid #3D3D3D',
-                    boxSizing: 'border-box',
-                    borderRadius: '24px',
-                    backgroundColor: '#1B1B1B',
-                    padding: '40px',
-                    position: 'relative',
+                  }}
+                >
+                  <p
+                    style={{
+                      fontSize: '24px',
+                      fontWeight: '600',
+                      color: '#FFFFFF',
+                      lineHeight: 'auto',
+                      fontFamily: 'Inter Tight',
+                    }}
+                  >
+                    Log in to UI Wiki
+                  </p>
+                </div>
+
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '32px',
+                    width: '100%',
                   }}
                 >
                   <div
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      props?.handleDialog();
-                    }}
                     style={{
-                      position: 'absolute',
-                      right: '24px',
-                      top: '24px',
-                      cursor: 'pointer',
-                      color: 'white',
-                      opacity: '100%',
-                    }}
-                  >
-                    <CancelIconSvg width="18" height="18" />
-                  </div>
-                  <div
-                    onClick={() => {
-                      setCurrentPage('HOME');
-                      setActiveLoginDialog(false);
-                    }}
-                    style={{
-                      width: 'fit-content',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <UiWikiLogoSvg />
-                  </div>
-                  <div
-                    style={{
-                      margin: '0',
-                      padding: '0',
-                      boxSizing: 'border-box',
                       display: 'flex',
                       flexDirection: 'column',
-                      gap: '24px',
                       alignItems: 'center',
+                      gap: '12px',
                       width: '100%',
-                      justifyContent: 'center',
                     }}
                   >
                     <div
                       style={{
                         display: 'flex',
                         flexDirection: 'column',
-                        justifyContent: 'center',
-                        textAlign: 'center',
+                        alignItems: 'center',
+                        gap: '16px',
                         width: '100%',
                       }}
                     >
-                      <p
+                      <div
                         style={{
-                          fontSize: '24px',
-                          fontWeight: '600',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          width: '100%',
+                          borderRadius: '14px',
+                          margin: '0px',
+                          padding: '0px',
+                        }}
+                      >
+                        <TextInput
+                          id="LoginEmailInputField"
+                          lableStyles={{
+                            fontSize: '16px !important',
+                            fontWeight: '600',
+                          }}
+                          labelAstrickStyle={{ color: '#E25454' }}
+                          label="Email"
+                          placeholder="Email"
+                          inputStyles={{
+                            borderRadius: '14px',
+                            backgroundColor: '#1B1B1B',
+                            height: '54px',
+                            fontSize: '14px',
+                            fontWeight: '400',
+                            lineHeight: '24px',
+                            padding: '15px 16px',
+                            color: errors.loginId ? '#E25454' : '#FFFFFF',
+                            border: errors.loginId ? '1px solid #E25454' : '0',
+                          }}
+                          inputWrapStyle={{
+                            minWidth: '10px !important',
+                            width: '100%',
+                          }}
+                          // sx={{
+                          //   '&::placeholder': {
+                          //     color: errors.loginId ? '#E25454' : '#8B8B8B',
+                          //   },
+                          // }}
+                          onChange={(e: any) => {
+                            setLoginId(e.target.value);
+                          }}
+                          onNext={inputField1Ref}
+                          value={loginId}
+                          required
+                        />
+                        {errors.loginId && (
+                          <p
+                            className="err_field"
+                            id="emailNotExist"
+                            style={{
+                              display: 'flex',
+                              color: '#E25454',
+                              gap: '4px',
+                              marginTop: '12px',
+                              alignItems: 'center',
+                              width: '100%',
+                              fontWeight: '400',
+                              fontSize: '14px',
+                              lineHeight: '16px',
+                              letterSpacing: '8%',
+                            }}
+                          >
+                            {errors.loginId && (
+                              <>
+                                <span>
+                                  <ErrorMessageIcon />
+                                </span>
+                                {errors.loginId}
+                              </>
+                            )}
+                          </p>
+                        )}
+                      </div>
+
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          width: '100%',
+                          borderRadius: '12px',
+                        }}
+                      >
+                        <TextInput
+                          id="LoginPasswordInputField"
+                          lableStyles={{
+                            fontSize: '16px !important',
+                            fontWeight: '600',
+                          }}
+                          labelAstrickStyle={{ color: '#E25454' }}
+                          label="Password"
+                          placeholder="Password"
+                          icononclick={() => setPasswordVisible(!passwordVisible)}
+                          icon={!passwordVisible ? <EyeOpenIcon /> : <EyeOffIcon />}
+                          type={!passwordVisible ? 'password' : 'text'}
+                          onChange={(e: any) => {
+                            setPassword(e.target.value);
+                          }}
+                          onNext={inputField2Ref}
+                          value={password}
+                          required
+                          inputWrapStyle={{
+                            minWidth: '10px !important',
+                            width: '100%',
+                          }}
+                          inputStyles={{
+                            borderRadius: '14px',
+                            backgroundColor: '#1B1B1B',
+                            height: '54px',
+                            fontSize: '14px',
+                            fontWeight: '400',
+                            lineHeight: '24px',
+                            paddingLeft: '16px',
+                            color: '#FFFFFF',
+                            border: errors.password ? '1px solid #E25454' : '0px',
+                          }}
+                          iconContainerStyles={{ right: '15px' }}
+                          iconstyles={{ width: '24px', height: '24px' }}
+                        />
+                        {errors.password && (
+                          <p
+                            className="err_field"
+                            id="loginPassNotExist"
+                            style={{
+                              display: 'flex',
+                              color: '#E25454',
+                              gap: '4px',
+                              marginTop: '12px',
+                              alignItems: 'center',
+                              width: '100%',
+                              fontWeight: '400',
+                              fontSize: '14px',
+                              lineHeight: '16px',
+                              letterSpacing: '8%',
+                            }}
+                          >
+                            {errors.password && (
+                              <>
+                                <span>
+                                  <ErrorMessageIcon />
+                                </span>
+                                {errors.password}
+                              </>
+                            )}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        width: '100%',
+                        justifyContent: 'flex-end',
+                        flexWrap: 'wrap',
+                      }}
+                    >
+                      <p
+                        onClick={() => {
+                          // router.push('/request-reset-password');
+                        }}
+                        style={{
+                          cursor: 'pointer',
+                          userSelect: 'none',
                           color: '#FFFFFF',
+                          fontSize: '14px',
+                          fontWeight: '400',
                           lineHeight: 'auto',
                           fontFamily: 'Inter Tight',
                         }}
                       >
-                        Log in to UI Wiki
+                        Forget Password?
                       </p>
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      width: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '16px',
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        // border: '1px solid red',
+                      }}
+                    >
+                      <ButtonPrimary
+                        // id="signinButton"
+                        sx={{
+                          // maxWidth:"346px",
+                          width: '346px',
+                          height: '54px',
+                          textAlign: 'center',
+                          textTransform: 'none',
+                          borderRadius: '14px',
+                        }}
+                        // ref={signinButtonRef}
+                        onClick={() => {
+                          !showLoading && login();
+                        }}
+                        endIcon={
+                          showLoading && (
+                            <div
+                              style={{
+                                width: '24px',
+                                height: '24px',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                              }}
+                            >
+                              <DefaultLoading size="24" trackColor="#CCFF00" color="#000" thickness="2px" />
+                            </div>
+                          )
+                        }
+                      >
+                        <p
+                          style={{
+                            color: '#000000',
+                            fontSize: '16px !important',
+                            fontWeight: '600',
+                            lineHeight: 'auto',
+                            fontFamily: 'Inter Tight',
+                          }}
+                        >
+                          {!showLoading && 'Sign in'}
+                        </p>
+                      </ButtonPrimary>
+                      {error && (
+                        <p
+                          style={{
+                            display: 'flex',
+                            color: '#E25454',
+                            gap: '4px',
+                            marginTop: '12px',
+                            alignItems: 'center',
+                            width: '100%',
+                            fontWeight: '400',
+                            fontSize: '14px',
+                            lineHeight: '16px',
+                            letterSpacing: '8%',
+                          }}
+                        >
+                          {error && (
+                            <>
+                              <span>
+                                <ErrorMessageIcon />
+                              </span>
+                              {error}
+                            </>
+                          )}
+                        </p>
+                      )}
                     </div>
 
                     <div
                       style={{
                         display: 'flex',
                         flexDirection: 'column',
-                        gap: '32px',
                         width: '100%',
                       }}
                     >
-                      <div
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'center',
-                          gap: '12px',
+                      <ButtonSecondary
+                        // id="signinButton"
+                        sx={{
                           width: '100%',
+                          height: '56px',
+                          textAlign: 'center',
+                          textTransform: 'none',
+                          backgroundColor: 'transparent',
+                          color: '#FFFFFF',
+                          borderRadius: '14px',
+                          // paddingY: '0px',
+                        }}
+                        // ref={signinButtonRef}
+                        onClick={() => handleGoogleSignIn()}
+                        startIcon={<GoogleIcon />}
+                      >
+                        <p
+                          style={{
+                            color: '#FFFFFF',
+                            fontWeight: '600',
+                            fontSize: '16px !important',
+                            lineHeight: 'auto',
+                            fontFamily: 'Inter Tight',
+                          }}
+                        >
+                          {'Log in with Google'}
+                        </p>
+                      </ButtonSecondary>
+                    </div>
+
+                    <div>
+                      <p
+                        style={{
+                          fontWeight: '400',
+                          fontSize: '14px',
+                          lineHeight: 'auto',
+                          // color: 'rgba(255, 255, 255, 0.5)',
+                          color: '#8B8B8B',
+                          textAlign: 'center',
+                          padding: '0px',
+                          margin: '0px',
+                          fontFamily: 'Inter Tight',
                         }}
                       >
-                        <div
+                        Don't have an account?{' '}
+                        <span
+                          onClick={() => {
+                            parent.postMessage({ pluginMessage: { type: 'close-plugin' } }, '*');
+                            const signupUrl = `${FRONTEND_HOST_NAME}/signup`;
+                            window.open(signupUrl, '_blank', 'noopener,noreferrer');
+                          }}
                           style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            gap: '16px',
-                            width: '100%',
+                            fontWeight: '400',
+                            color: '#CCFF00',
+                            cursor: 'pointer',
+                            fontFamily: 'Inter Tight',
                           }}
                         >
-                          <div
-                            style={{
-                              display: 'flex',
-                              flexDirection: 'column',
-                              width: '100%',
-                              borderRadius: '14px',
-                              margin: '0px',
-                              padding: '0px',
-                            }}
-                          >
-                            <TextInput
-                              id="LoginEmailInputField"
-                              lableStyles={{
-                                fontSize: '16px !important',
-                                fontWeight: '600',
-                              }}
-                              labelAstrickStyle={{ color: '#E25454' }}
-                              label="Email"
-                              placeholder="Email"
-                              inputStyles={{
-                                borderRadius: '14px',
-                                backgroundColor: '#1B1B1B',
-                                height: '54px',
-                                fontSize: '14px',
-                                fontWeight: '400',
-                                lineHeight: '24px',
-                                padding: '15px 16px',
-                                color: errors.loginId ? '#E25454' : '#FFFFFF',
-                                border: errors.loginId ? '1px solid #E25454' : '0',
-                              }}
-                              inputWrapStyle={{
-                                minWidth: '10px !important',
-                                width: '100%',
-                              }}
-                              // sx={{
-                              //   '&::placeholder': {
-                              //     color: errors.loginId ? '#E25454' : '#8B8B8B',
-                              //   },
-                              // }}
-                              onChange={(e: any) => {
-                                setLoginId(e.target.value);
-                              }}
-                              onNext={inputField1Ref}
-                              value={loginId}
-                              required
-                            />
-                            {errors.loginId && (
-                              <p
-                                className="err_field"
-                                id="emailNotExist"
-                                style={{
-                                  display: 'flex',
-                                  color: '#E25454',
-                                  gap: '4px',
-                                  marginTop: '12px',
-                                  alignItems: 'center',
-                                  width: '100%',
-                                  fontWeight: '400',
-                                  fontSize: '14px',
-                                  lineHeight: '16px',
-                                  letterSpacing: '8%',
-                                }}
-                              >
-                                {errors.loginId && (
-                                  <>
-                                    <span>
-                                      <ErrorMessageIcon />
-                                    </span>
-                                    {errors.loginId}
-                                  </>
-                                )}
-                              </p>
-                            )}
-                          </div>
-
-                          <div
-                            style={{
-                              display: 'flex',
-                              flexDirection: 'column',
-                              width: '100%',
-                              borderRadius: '12px',
-                            }}
-                          >
-                            <TextInput
-                              id="LoginPasswordInputField"
-                              lableStyles={{
-                                fontSize: '16px !important',
-                                fontWeight: '600',
-                              }}
-                              labelAstrickStyle={{ color: '#E25454' }}
-                              label="Password"
-                              placeholder="Password"
-                              icononclick={() => setPasswordVisible(!passwordVisible)}
-                              icon={!passwordVisible ? <EyeOpenIcon /> : <EyeOffIcon />}
-                              type={!passwordVisible ? 'password' : 'text'}
-                              onChange={(e: any) => {
-                                setPassword(e.target.value);
-                              }}
-                              onNext={inputField2Ref}
-                              value={password}
-                              required
-                              inputWrapStyle={{
-                                minWidth: '10px !important',
-                                width: '100%',
-                              }}
-                              inputStyles={{
-                                borderRadius: '14px',
-                                backgroundColor: '#1B1B1B',
-                                height: '54px',
-                                fontSize: '14px',
-                                fontWeight: '400',
-                                lineHeight: '24px',
-                                paddingLeft: '16px',
-                                color: '#FFFFFF',
-                                border: errors.password ? '1px solid #E25454' : '0px',
-                              }}
-                              iconContainerStyles={{ right: '15px' }}
-                              iconstyles={{ width: '24px', height: '24px' }}
-                            />
-                            {errors.password && (
-                              <p
-                                className="err_field"
-                                id="loginPassNotExist"
-                                style={{
-                                  display: 'flex',
-                                  color: '#E25454',
-                                  gap: '4px',
-                                  marginTop: '12px',
-                                  alignItems: 'center',
-                                  width: '100%',
-                                  fontWeight: '400',
-                                  fontSize: '14px',
-                                  lineHeight: '16px',
-                                  letterSpacing: '8%',
-                                }}
-                              >
-                                {errors.password && (
-                                  <>
-                                    <span>
-                                      <ErrorMessageIcon />
-                                    </span>
-                                    {errors.password}
-                                  </>
-                                )}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-
-                        <div
-                          style={{
-                            display: 'flex',
-                            flexDirection: 'row',
-                            width: '100%',
-                            justifyContent: 'flex-end',
-                            flexWrap: 'wrap',
-                          }}
-                        >
-                          <p
-                            onClick={() => {
-                              // router.push('/request-reset-password');
-                            }}
-                            style={{
-                              cursor: 'pointer',
-                              userSelect: 'none',
-                              color: '#FFFFFF',
-                              fontSize: '14px',
-                              fontWeight: '400',
-                              lineHeight: 'auto',
-                              fontFamily: 'Inter Tight',
-                            }}
-                          >
-                            Forget Password?
-                          </p>
-                        </div>
-                      </div>
-
-                      <div
-                        style={{
-                          width: '100%',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          gap: '16px',
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: '100%',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            // border: '1px solid red',
-                          }}
-                        >
-                          <ButtonPrimary
-                            // id="signinButton"
-                            sx={{
-                              // maxWidth:"346px",
-                              width: '346px',
-                              height: '54px',
-                              textAlign: 'center',
-                              textTransform: 'none',
-                              borderRadius: '14px',
-                            }}
-                            // ref={signinButtonRef}
-                            onClick={() => {
-                              !showLoading && login();
-                            }}
-                            endIcon={
-                              showLoading && (
-                                <div
-                                  style={{
-                                    width: '42px',
-                                    height: '42px',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                  }}
-                                >
-                                  {/* <DefaultLoading width="42px" height="42px" /> */}
-                                  Loading...
-                                </div>
-                              )
-                            }
-                          >
-                            <p
-                              style={{
-                                color: '#000000',
-                                fontSize: '16px !important',
-                                fontWeight: '600',
-                                lineHeight: 'auto',
-                                fontFamily: 'Inter Tight',
-                              }}
-                            >
-                              {!showLoading && 'Sign in'}
-                            </p>
-                          </ButtonPrimary>
-                          {error && (
-                            <p
-                              style={{
-                                display: 'flex',
-                                color: '#E25454',
-                                gap: '4px',
-                                marginTop: '12px',
-                                alignItems: 'center',
-                                width: '100%',
-                                fontWeight: '400',
-                                fontSize: '14px',
-                                lineHeight: '16px',
-                                letterSpacing: '8%',
-                              }}
-                            >
-                              {error && (
-                                <>
-                                  <span>
-                                    <ErrorMessageIcon />
-                                  </span>
-                                  {error}
-                                </>
-                              )}
-                            </p>
-                          )}
-                        </div>
-
-                        <div
-                          style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            width: '100%',
-                          }}
-                        >
-                          <ButtonSecondary
-                            // id="signinButton"
-                            sx={{
-                              width: '100%',
-                              height: '56px',
-                              textAlign: 'center',
-                              textTransform: 'none',
-                              backgroundColor: 'transparent',
-                              color: '#FFFFFF',
-                              borderRadius: '14px',
-                              // paddingY: '0px',
-                            }}
-                            // ref={signinButtonRef}
-                            onClick={() => handleGoogleSignIn()}
-                            startIcon={<GoogleIcon />}
-                          >
-                            <p
-                              style={{
-                                color: '#FFFFFF',
-                                fontWeight: '600',
-                                fontSize: '16px !important',
-                                lineHeight: 'auto',
-                                fontFamily: 'Inter Tight',
-                              }}
-                            >
-                              {'Log in with Google'}
-                            </p>
-                          </ButtonSecondary>
-                        </div>
-
-                        <div>
-                          <p
-                            style={{
-                              fontWeight: '400',
-                              fontSize: '14px',
-                              lineHeight: 'auto',
-                              // color: 'rgba(255, 255, 255, 0.5)',
-                              color: '#8B8B8B',
-                              textAlign: 'center',
-                              padding: '0px',
-                              margin: '0px',
-                              fontFamily: 'Inter Tight',
-                            }}
-                          >
-                            Don't have an account?{' '}
-                            <span
-                              onClick={() => {
-                                // router.push('/signup');
-                              }}
-                              style={{
-                                fontWeight: '400',
-                                color: '#CCFF00',
-                                cursor: 'pointer',
-                                fontFamily: 'Inter Tight',
-                              }}
-                            >
-                              Sign up
-                            </span>
-                          </p>
-                        </div>
-                      </div>
+                          Sign up
+                        </span>
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
-            {/* </div> */}
-          {/* </div> */}
+            </div>
+          </div>
         </div>
       </>
     )

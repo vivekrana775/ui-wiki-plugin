@@ -3,6 +3,7 @@ import { useGlobalContext } from '../context/GlobalContext';
 import LeftArrowIcon from '../assets/icons/LeftArrowIcon';
 import { getUserFavorites } from '../services/component';
 import ComponentCard from '../components/ComponentCard';
+import DefaultLoading from '../shared/loading/DefaultLoading';
 
 const FavoritesPage = () => {
   const { tabs, setCurrentPage, activeTab, setActiveTab } = useGlobalContext();
@@ -76,10 +77,20 @@ const FavoritesPage = () => {
         <div className="favorite_result_container">
           <div className="content-section">
             {loading ? (
-              <div> Loading...</div>
+              <div
+                style={{
+                  width: '100%',
+                  height: '95%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <DefaultLoading size='25' trackColor="#0C0C0C" />
+              </div>
             ) : currentTabDataList?.length === 0 ? (
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <h4 style={{ color: '#FFFFFF' }}>No Favorites Added yet</h4>
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center',height:"100%" }}>
+                <p style={{ color: '#FFFFFF' }}>No Favorites Added yet</p>
               </div>
             ) : (
               <div className="components-grid">

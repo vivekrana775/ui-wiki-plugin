@@ -9,14 +9,39 @@ import FavoriteIconSvg from '../assets/icons/FavoriteIconSvg';
 import SupportHeadphoneIcon from '../assets/icons/SupportHeadphoneIcon';
 import QuestionMarkIconSvg from '../assets/icons/QuestionMarkIconSvg';
 import { removeItemFigmaClientStorage } from '../utils/storage';
+import avatarMap from '../utils/avatarMap';
 
 const SettingsPage = () => {
   const { setCurrentPage, userDetails, setUserDetails } = useGlobalContext();
 
-  // Calculate all fallback values
-  const avatarSrc = userDetails?.avatar || userDetails?.secondaryAvatar || UserImage;
+  // Step 1: Extract  filename from Secondary Avatar  
+  const secondaryAvatar = userDetails?.secondaryAvatar;
+  let secondaryAvatarFileName = null;
+
+  if (secondaryAvatar) {
+    const parts = secondaryAvatar.split('/');
+    const lastPart = parts[parts.length - 1];  // Example: UiWikiAvt6.1282d051.png
+    const match = lastPart.match(/(UiWikiAvt\d+)\./);  
+    if (match) {
+      secondaryAvatarFileName = `${match[1]}.png`;  // Example: UiWikiAvt6.png
+    }
+  }
+  
+  // Step 2: Final Avatar Path decide karo
+  const avatarSrc = userDetails?.avatar?.trim()
+  ? userDetails.avatar
+  : secondaryAvatarFileName && avatarMap[secondaryAvatarFileName]
+  ? avatarMap[secondaryAvatarFileName]
+  : UserImage;
+  
   const userName =
-    userDetails?.firstName && userDetails?.lastName ? `${userDetails.firstName} ${userDetails.lastName}` : 'David Kim';
+    userDetails?.firstName && userDetails?.lastName
+      ? `${userDetails.firstName} ${userDetails.lastName}`
+      : userDetails?.firstName
+      ? userDetails.firstName
+      : userDetails?.lastName
+      ? userDetails.lastName
+      : 'David Kim';
   const userEmail = userDetails?.email || 'david23@gmail.com';
 
   const handleLogout = async () => {
@@ -72,7 +97,7 @@ const SettingsPage = () => {
         </div>
         <div className="setting_support_container">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div onClick={()=>setCurrentPage("FAVORITES")} className="setting_support_card">
+            <div onClick={() => setCurrentPage('FAVORITES')} className="setting_support_card">
               <div className="setting_card">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <span>

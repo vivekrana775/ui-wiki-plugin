@@ -88,6 +88,9 @@ input:focus {
   display: flex;
   align-items: center;
   gap: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 22px;
 }
 .dropdown-btn.open {
   /* border-color: #6b47dc; */

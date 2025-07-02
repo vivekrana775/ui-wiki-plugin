@@ -44,6 +44,10 @@ figma.ui.onmessage = async(msg) => {
     await figma.clientStorage.setAsync(msg.key, null);
   }
 
+   if (msg.type === 'close-plugin') {
+    figma.closePlugin();
+  }
+
   if (msg.type === "copy-to-clipboard") {
     console.log("Copy to clipboard called with content:", msg.content);
     await figma.clipboard.writeText(msg.content);

@@ -19,6 +19,7 @@ const DefaultLoading: React.FC<LoaderProps> = ({
     height: size,
     border: `${thickness} solid ${trackColor}`,
     borderTop: `${thickness} solid ${color}`,
+    borderLeft: `${thickness} solid ${color}`,
     borderRadius: '50%',
     animation: 'spin 0.8s linear infinite',
   };

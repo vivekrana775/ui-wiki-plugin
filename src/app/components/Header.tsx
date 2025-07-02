@@ -4,7 +4,9 @@ import UserIconSvg from '../assets/icons/UserIconSvg';
 import { getItemFigmaClientStorage } from '../utils/storage';
 
 const Header = () => {
-  const { tabs, activeTab, setActiveTab, setCurrentPage, setActiveLoginDialog } = useGlobalContext();
+  const { tabs, activeTab, setActiveTab, setCurrentPage, setActiveLoginDialog, setCurrentScreen } = useGlobalContext();
+
+  const screenMap = ['COMPONENT', 'PAGE', 'SCREEN'];
 
   const handleOpenSettingPage = async () => {
     const token = await getItemFigmaClientStorage('jsToken');
@@ -23,7 +25,10 @@ const Header = () => {
             <li
               key={tab.value}
               className={`nav-tab ${activeTab === tab.value ? 'active' : ''}`}
-              onClick={() => setActiveTab(tab.value)}
+              onClick={() => {
+                setActiveTab(tab.value);
+                setCurrentScreen(screenMap[tab.value] || 'COMPONENT');
+              }}
             >
               {activeTab === tab.value ? tab.activeIcon : tab.icon}
               {tab.label}

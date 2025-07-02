@@ -11,6 +11,7 @@ import SearchComponent from '../components/SearchComponent';
 import { useGlobalContext } from '../context/GlobalContext';
 import { getAllPages } from '../services/page';
 import { getAllScreens } from '../services/screen';
+import DefaultLoading from '../shared/loading/DefaultLoading';
 
 const ROWS_PER_PAGE = 20;
 
@@ -21,8 +22,6 @@ function Home() {
     setSelectedCollection,
     selectedCategory,
     setSelectedCategory,
-    loading,
-    setLoading,
     showFreeOnly,
     searchQuery,
     collections,
@@ -36,12 +35,10 @@ function Home() {
   } = useGlobalContext();
   const [page, setPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState(true);
+  const [fetchDataLoading, setFetchDataLoading] = useState(true);
   const [loadMoreLoading, setLoadMoreLoading] = useState(false);
-  // const [currentTabDataList, setCurrentTabDataList] = useState<{ paginatedComponents: any[] }>({
-  //   paginatedComponents: [],
-  // });
   const [currentTabDataList, setCurrentTabDataList] = useState<any[]>([]);
-
+  const [isEmpty, setIsEmpty] = useState(false);
   const loaderRef = useRef<HTMLDivElement>(null);
 
   const handleReset = () => {
@@ -53,11 +50,12 @@ function Home() {
   // Data fetching with filters
   const fetchTabWiseData = async (filters?: any, resetPage = false) => {
     try {
+      setIsEmpty(false);
       const apiFunction = getCorrectApiFunction();
       const res: any = await apiFunction(filters);
 
       // Har tab ke hisab se correct data extract karo
-     let extractedData = [];
+      let extractedData = [];
       let totalCount = 0;
 
       if (activeTab === 0) {
@@ -81,10 +79,11 @@ function Home() {
         setCurrentTabDataList((prevList: any) => [...(prevList || []), ...extractedData]);
       }
       setHasMore(totalCount > ROWS_PER_PAGE * filters.page);
+      setIsEmpty(extractedData.length === 0);
     } catch (err) {
       console.error('Error fetching filtered components:', err);
     } finally {
-      setLoading(false);
+      setFetchDataLoading(false);
       setLoadMoreLoading(false);
     }
   };
@@ -107,7 +106,7 @@ function Home() {
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loading) {
+        if (entries[0].isIntersecting && hasMore && !fetchDataLoading) {
           handleLoadMore();
         }
       },
@@ -123,7 +122,7 @@ function Home() {
         observer.unobserve(loaderRef.current);
       }
     };
-  }, [loading, hasMore]);
+  }, [fetchDataLoading, hasMore]);
 
   // Infinity api call on page change
   useEffect(() => {
@@ -142,6 +141,8 @@ function Home() {
 
   // get data on every filter change
   useEffect(() => {
+    setFetchDataLoading(true);
+    setIsEmpty(false);
     const filters = {
       collections: selectedCollection !== 'all' ? [selectedCollection] : [],
       categories: selectedCategory !== 'all' ? [selectedCategory] : [],
@@ -212,9 +213,19 @@ function Home() {
         <div className="result_container">
           {/* Component Grid/List */}
           <div className="content-section">
-            {loading ? (
-              <div> Loading...</div>
-            ) : currentTabDataList?.length === 0 ? (
+            {fetchDataLoading ? (
+              <div
+                style={{
+                  width: '100%',
+                  height: '95%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <DefaultLoading size='25' trackColor="#0C0C0C" />
+              </div>
+            ) : isEmpty ? (
               <NoResultUI />
             ) : (
               <div className={viewMode === 'grid' ? 'components-grid' : 'components-list'}>
@@ -230,6 +241,7 @@ function Home() {
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
+                // border:"1px solid green",
               }}
               ref={loaderRef}
             >
@@ -242,7 +254,7 @@ function Home() {
                     width: '100%',
                   }}
                 >
-                  <h2>Loading...</h2>
+                  <DefaultLoading size="20" thickness="2px" trackColor="#0C0C0C" />
                 </div>
               )}
             </div>

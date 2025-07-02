@@ -42,7 +42,7 @@ const ComponentCard = ({ card }) => {
     if (isSubscribed || card?.license === 'FREE') {
       setCopiedFigmaDesignMessage('Component copied to clipboard');
       setComponentCopiedpopupVisible(true);
-      return;
+      // return;
       try {
         const componentSourceCode: any = await getFigmaSouceCodeById(card?.id);
         const htmlContent = componentSourceCode?.data?.figmaCode || '';
@@ -52,30 +52,31 @@ const ComponentCard = ({ card }) => {
           setCopyLoading(false);
           return;
         }
-        // Create a Blob with the HTML content and specify the MIME type as 'text/html'
-        // const blob = new Blob([htmlContent], { type: 'text/html' });
-        // const clipboardItem = new ClipboardItem({ 'text/html': blob });
-        // Copy the Blob to the clipboard
-        // navigator.clipboard
-        //   .write([clipboardItem])
-        //   .then(() => {
-        //     console.log('5');
-        //     alert('component Copied success');
-        //   })
-        //   .catch((err) => {
-        //     console.log('6');
-        //     alert('Unable to copy component');
-        //   });
 
-        // console.log("clipboardItem",clipboardItem)
-        //  Message bhejna main thread ko ke copy karna hai
-        window.parent.postMessage({ pluginMessage: { type: 'copy-to-clipboard', content: htmlContent } }, '*');
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlContent, 'text/html');
+        // returns a HTMLDocument, which also is a Document.
 
-        // Success notification bhejna
-        // window.parent.postMessage(
-        //   { pluginMessage: { type: 'show-notification', content: 'Component copied successfully!' } },
-        //   '*'
-        // );
+        // const myDiv = doc.querySelector('.myDiv');
+        console.log(doc);
+
+        // 1. Create a temporary textarea element
+      const textarea = document.createElement("textarea");
+      
+      // 2. Assign the HTML content to it
+      textarea.value = doc.documentElement.outerHTML;
+
+      // 3. Make it invisible and add it to the DOM
+      textarea.style.position = "absolute";
+      textarea.style.left = "-9999px";
+      document.body.appendChild(textarea);
+
+      // 4. Select the content and execute the copy command
+      textarea.select();
+      document.execCommand("copy");
+
+      // 5. Remove the temporary textarea
+      document.body.removeChild(textarea);
       } catch (error) {
         console.log('7');
         console.error('Copy failed:', error);
