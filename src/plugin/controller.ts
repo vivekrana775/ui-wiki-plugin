@@ -48,12 +48,12 @@ figma.ui.onmessage = async(msg) => {
     figma.closePlugin();
   }
 
-  if (msg.type === "copy-to-clipboard") {
-    console.log("Copy to clipboard called with content:", msg.content);
-    await figma.clipboard.writeText(msg.content);
-    // figma.notify("Component copied to clipboard!");
-    figma.notify("###################################");
-  }
+  // if (msg.type === "copy-to-clipboard") {
+  //   console.log("Copy to clipboard called with content:", msg.content);
+  //   await figma.clipboard.writeText(msg.content);
+  //   // figma.notify("Component copied to clipboard!");
+  //   figma.notify("###################################");
+  // }
   // if (msg.type === "show-notification") {
   //   figma.notify(msg.content);
   // }

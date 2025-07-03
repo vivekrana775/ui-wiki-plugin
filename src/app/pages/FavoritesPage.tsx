@@ -4,6 +4,7 @@ import LeftArrowIcon from '../assets/icons/LeftArrowIcon';
 import { getUserFavorites } from '../services/component';
 import ComponentCard from '../components/ComponentCard';
 import DefaultLoading from '../shared/loading/DefaultLoading';
+import FavoritePageNoResultUI from '../components/FavoritePageNoResultUI';
 
 const FavoritesPage = () => {
   const { tabs, setCurrentPage, activeTab, setActiveTab } = useGlobalContext();
@@ -89,9 +90,7 @@ const FavoritesPage = () => {
                 <DefaultLoading size='25' trackColor="#0C0C0C" />
               </div>
             ) : currentTabDataList?.length === 0 ? (
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center',height:"100%" }}>
-                <p style={{ color: '#FFFFFF' }}>No Favorites Added yet</p>
-              </div>
+              <FavoritePageNoResultUI/>
             ) : (
               <div className="components-grid">
                 {currentTabDataList?.map((card) => (
