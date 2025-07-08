@@ -29,73 +29,12 @@ const ComponentCard = ({ card }) => {
   const [animateLike, setAnimateLike] = useState(false);
   const [isLiked, setIsLiked] = useState<boolean>(false);
 
-  // const handleCopyFigmaCode = async () => {
-  //   setCopyLoading(true);
-
-  //   const token = await getItemFigmaClientStorage('jsToken');
-  //   if (!token) {
-  //     // alert('Please login first.');
-  //     setActiveLoginDialog(true);
-  //     setCopyLoading(false);
-  //     return;
-  //   }
-
-  //   if (isSubscribed || card?.license === 'FREE') {
-  //     setCopiedFigmaDesignMessage('Component copied to clipboard');
-  //     setComponentCopiedpopupVisible(true);
-  //     // return;
-  //     try {
-  //       const componentSourceCode: any = await getFigmaSouceCodeById(card?.id);
-  //       const htmlContent = componentSourceCode?.data?.figmaCode || '';
-  //       // console.log("html",htmlContent)
-  //       if (!htmlContent) {
-  //         alert('No content to copy.');
-  //         setCopyLoading(false);
-  //         return;
-  //       }
-
-  //       const parser = new DOMParser();
-  //       const doc = parser.parseFromString(htmlContent, 'text/html');
-  //       // returns a HTMLDocument, which also is a Document.
-
-  //       // const myDiv = doc.querySelector('.myDiv');
-  //       console.log(doc);
-
-  //       // 1. Create a temporary textarea element
-  //       const textarea = document.createElement('textarea');
-
-  //       // 2. Assign the HTML content to it
-  //       textarea.value = doc.documentElement.outerHTML;
-
-  //       // 3. Make it invisible and add it to the DOM
-  //       // textarea.style.position = "absolute";
-  //       // textarea.style.left = "-9999px";
-  //       // document.body.appendChild(textarea);
-
-  //       // // 4. Select the content and execute the copy command
-  //       // textarea.select();
-  //       // document.execCommand("copy");
-
-  //       // // 5. Remove the temporary textarea
-  //       // document.body.removeChild(textarea);
-  //     } catch (error) {
-  //       console.log('7');
-  //       console.error('Copy failed:', error);
-  //       alert('Failed Something went wrong.');
-  //     }
-  //   } else {
-  //     console.log('8');
-  //     alert('Please subscribed first.');
-  //   }
-  //   console.log('9');
-  //   setCopyLoading(false);
-  // };
-
   const handleCopyFigmaCode = async () => {
     setCopyLoading(true);
 
     const token = await getItemFigmaClientStorage('jsToken');
     if (!token) {
+      // alert('Please login first.');
       setActiveLoginDialog(true);
       setCopyLoading(false);
       return;
@@ -105,49 +44,32 @@ const ComponentCard = ({ card }) => {
       try {
         const componentSourceCode: any = await getFigmaSouceCodeById(card?.id);
         const htmlContent = componentSourceCode?.data?.figmaCode || '';
-
         if (!htmlContent) {
           alert('No content to copy.');
           setCopyLoading(false);
           return;
         }
 
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(htmlContent, 'text/html');
-        console.log('doc', doc.documentElement.outerHTML);
+        const copyComponent = (code: string, t = 'application/json') => {
+          const n = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            e.clipboardData && e.clipboardData.setData(t, code);
+            window.removeEventListener('copy', n, !0);
+          };
+          window.addEventListener('copy', n, !0);
+          document.execCommand('copy');
+        };
 
-        // Create a hidden div with the HTML content
-        const hiddenDiv = document.createElement('div');
-        hiddenDiv.style.position = 'absolute';
-        hiddenDiv.style.left = '-9999px';
-        hiddenDiv.innerHTML = doc.documentElement.outerHTML;
-        document.body.appendChild(hiddenDiv);
-
-        // Select the HTML content
-        const range = document.createRange();
-        range.selectNode(hiddenDiv);
-        window.getSelection()?.removeAllRanges();
-        window.getSelection()?.addRange(range);
-
-        // Execute copy command
-        const success = document.execCommand('copy');
-
-        // Clean up
-        window.getSelection()?.removeAllRanges();
-        document.body.removeChild(hiddenDiv);
-
-        if (success) {
-          setCopiedFigmaDesignMessage('Component copied to clipboard');
-          setComponentCopiedpopupVisible(true);
-        } else {
-          throw new Error('Copy failed');
-        }
+        copyComponent(htmlContent, 'text/html');
+        setCopiedFigmaDesignMessage('Component copied to clipboard');
+        setComponentCopiedpopupVisible(true);
       } catch (error) {
         console.error('Copy failed:', error);
-        alert('Failed to copy. Please try again.');
+        alert('Failed Something went wrong.');
       }
     } else {
-      alert('Please subscribe first.');
+      alert('Please subscribed first.');
     }
     setCopyLoading(false);
   };

@@ -223,7 +223,7 @@ function Home() {
                   alignItems: 'center',
                 }}
               >
-                <DefaultLoading size='25' trackColor="#0C0C0C" />
+                <DefaultLoading size="25" trackColor="#0C0C0C" />
               </div>
             ) : isEmpty ? (
               <NoResultUI />
