@@ -40,6 +40,8 @@ function Home() {
   const [currentTabDataList, setCurrentTabDataList] = useState<any[]>([]);
   const [isEmpty, setIsEmpty] = useState(false);
   const loaderRef = useRef<HTMLDivElement>(null);
+  // for inifity scroll we have to give to exact container in plugin code
+  const resultContainerRef: any = useRef();
 
   const handleReset = () => {
     resetFilters();
@@ -103,26 +105,48 @@ function Home() {
   };
 
   // Infinite scroll
+  // useEffect(() => {
+  //   const observer = new IntersectionObserver(
+  //     (entries) => {
+  //       if (entries[0].isIntersecting && hasMore && !fetchDataLoading) {
+  //         handleLoadMore();
+  //       }
+  //     },
+  //     // { threshold: 1.0 }
+  //     { threshold: 0.1 }
+  //   );
+
+  //   if (loaderRef.current) {
+  //     observer.observe(loaderRef.current);
+  //   }
+
+  //   return () => {
+  //     if (loaderRef.current) {
+  //       observer.unobserve(loaderRef.current);
+  //     }
+  //   };
+  // }, [fetchDataLoading, hasMore]);
+
+  // Manual Infinity scroll call
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore && !fetchDataLoading) {
-          handleLoadMore();
-        }
-      },
-      { threshold: 1.0 }
-    );
+    const handleScroll = () => {
+      const scrollTop = resultContainerRef.current.scrollTop;
+      const scrollHeight = resultContainerRef.current.scrollHeight;
+      const clientHeight = resultContainerRef.current.clientHeight;
 
-    if (loaderRef.current) {
-      observer.observe(loaderRef.current);
-    }
-
-    return () => {
-      if (loaderRef.current) {
-        observer.unobserve(loaderRef.current);
+      if (scrollTop + clientHeight >= scrollHeight * 0.8 && hasMore && !fetchDataLoading && !loadMoreLoading) {
+        console.log('80% scroll Done');
+        handleLoadMore();
       }
     };
-  }, [fetchDataLoading, hasMore]);
+
+    const container = resultContainerRef.current;
+    container.addEventListener('scroll', handleScroll);
+
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+    };
+  }, [hasMore, fetchDataLoading, loadMoreLoading]);
 
   // Infinity api call on page change
   useEffect(() => {
@@ -212,7 +236,7 @@ function Home() {
 
         <div className="result_container">
           {/* Component Grid/List */}
-          <div className="content-section">
+          <div ref={resultContainerRef} className="content-section">
             {fetchDataLoading ? (
               <div
                 style={{
@@ -223,7 +247,7 @@ function Home() {
                   alignItems: 'center',
                 }}
               >
-                <DefaultLoading size='25' trackColor="#0C0C0C" />
+                <DefaultLoading size="25" trackColor="#0C0C0C" />
               </div>
             ) : isEmpty ? (
               <NoResultUI />
