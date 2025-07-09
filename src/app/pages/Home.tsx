@@ -98,6 +98,7 @@ function Home() {
 
   // Load more handler
   const handleLoadMore = () => {
+    if (loadMoreLoading) return;
     setLoadMoreLoading(true);
     setPage((prevPage) => {
       return prevPage + 1;
@@ -129,15 +130,26 @@ function Home() {
 
   // Manual Infinity scroll call
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop = resultContainerRef.current.scrollTop;
-      const scrollHeight = resultContainerRef.current.scrollHeight;
-      const clientHeight = resultContainerRef.current.clientHeight;
+    let timeoutId: any;
 
-      if (scrollTop + clientHeight >= scrollHeight * 0.8 && hasMore && !fetchDataLoading && !loadMoreLoading) {
-        console.log('80% scroll Done');
-        handleLoadMore();
-      }
+    const handleScroll = () => {
+      if (timeoutId) return;
+
+      timeoutId = setTimeout(() => {
+        const scrollTop = resultContainerRef.current.scrollTop;
+        const scrollHeight = resultContainerRef.current.scrollHeight;
+        const clientHeight = resultContainerRef.current.clientHeight;
+
+        const isNearBottom = scrollTop + clientHeight >= scrollHeight * 0.7;
+
+        if (isNearBottom && hasMore && !fetchDataLoading && !loadMoreLoading) {
+          // console.log('Scroll Triggered for Page:', page + 1);
+          handleLoadMore();
+        }
+
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }, 200);
     };
 
     const container = resultContainerRef.current;
@@ -145,6 +157,7 @@ function Home() {
 
     return () => {
       container.removeEventListener('scroll', handleScroll);
+      if (timeoutId) clearTimeout(timeoutId);
     };
   }, [hasMore, fetchDataLoading, loadMoreLoading]);
 
@@ -259,7 +272,7 @@ function Home() {
               </div>
             )}
             {/* Loader reference for infinite scroll */}
-            <div
+            {/* <div
               style={{
                 height: '24px',
                 display: 'flex',
@@ -267,21 +280,21 @@ function Home() {
                 alignItems: 'center',
                 // border:"1px solid green",
               }}
-              ref={loaderRef}
-            >
-              {loadMoreLoading && (
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: '100%',
-                  }}
-                >
-                  <DefaultLoading size="20" thickness="2px" trackColor="#0C0C0C" />
-                </div>
-              )}
-            </div>
+              // ref={loaderRef}
+            > */}
+            {loadMoreLoading && (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '100%',
+                }}
+              >
+                <DefaultLoading size="20" thickness="2px" trackColor="#0C0C0C" />
+              </div>
+            )}
+            {/* </div> */}
           </div>
         </div>
       </div>

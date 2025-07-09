@@ -74,7 +74,7 @@ const FavoritesPage = () => {
         </div>
       </div>
 
-      <div style={{ width: '100%', height: '82%' }}>
+      <div style={{ width: '100%', flexGrow: '1', overflow: 'hidden' }}>
         <div className="favorite_result_container">
           <div className="content-section">
             {loading ? (
@@ -87,10 +87,10 @@ const FavoritesPage = () => {
                   alignItems: 'center',
                 }}
               >
-                <DefaultLoading size='25' trackColor="#0C0C0C" />
+                <DefaultLoading size="25" trackColor="#0C0C0C" />
               </div>
             ) : currentTabDataList?.length === 0 ? (
-              <FavoritePageNoResultUI/>
+              <FavoritePageNoResultUI />
             ) : (
               <div className="components-grid">
                 {currentTabDataList?.map((card) => (
