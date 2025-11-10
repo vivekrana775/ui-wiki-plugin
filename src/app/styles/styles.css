@@ -31,7 +31,8 @@
     padding: 0px 24px;
     height: auto;
     padding-top: 18px;
-    margin-bottom: 21px;
+    /* margin-bottom: 21px; */
+    margin-bottom: 20px;
   }
   
   .nav-section {
@@ -39,7 +40,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
+    /* gap: 16px; */
+    gap: 10px;
   } 
   
   .nav-tabs {
@@ -47,7 +49,8 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 16px;
+    /* gap: 16px; */
+    gap: 8px;
   }
   
   .nav-tab {
@@ -58,11 +61,13 @@
     height: 44px;
     width: auto;
     /* padding: 9px 20.5px; */
-    padding: 9px 16px;
+    /* padding: 9px 16px; */
+    padding: 11px 16px;
     color: #8B8B8B;
     font-weight: 600;
     border-radius: 100px;
     line-height: 22px;
+    letter-spacing: 0%;
     font-size: 14px;
     cursor: pointer;
     transition: color 0.2s;
@@ -168,14 +173,15 @@
   
   .search-clear {
     position: absolute;
-    right: 8.5px;
+    /* right: 8.5px; */
+    right: 12px;
     top: 50%;
     transform: translateY(-50%);
     background: transparent;
     border: none;
     color: #9ca3af;
     cursor: pointer;
-    padding: 0.25rem;
+    /* padding: 0.25rem; */
     border-radius: 0.25rem;
     transition: color 0.2s;
   }
@@ -252,8 +258,9 @@
 }
 /* For WebKit browsers (Chrome, Edge, Safari) */
 .content-section::-webkit-scrollbar {
-  width: 10px;
-}
+  /* width: 10px; */
+  width: 8px;
+}  
 
 .content-section::-webkit-scrollbar-track {
   background: #141414;

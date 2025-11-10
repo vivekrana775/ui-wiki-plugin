@@ -55,7 +55,8 @@ input:focus {
   width: 100%;
   height: auto;
   min-height: 44px;
-  padding: 3px 12px;
+  /* padding: 3px 12px; */
+  padding: 11px 12px 11px 16px;
   cursor: pointer;
   /* border: 1px solid transparent; */
   border: none;
@@ -101,9 +102,12 @@ input:focus {
   border-radius: 12px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
   overflow-y: scroll;
-  transition: all 0.5s ease;
-  transform: translateY(-800px);
-  z-index: 1000;
+  /* transition: all 0.5s ease; */
+  transition: all 0.1s ease;
+  /* transform: translateY(-800px); */
+  /* z-index: 1000; */
+  z-index: -1;
+  opacity: 0;
 }
 
 .dropdown-menu::-webkit-scrollbar {
@@ -123,7 +127,8 @@ input:focus {
 
 .dropdown-menu.show {
   z-index: 99;
-  transform: translateY(0);
+  /* transform: translateY(0); */
+  opacity: 1;
 }
 
 .dropdown-menu li {
@@ -155,7 +160,8 @@ input:focus {
   background-color: #1B1B1B;
   justify-content: center;
   align-items: center;
-  max-width: 102px;
+  /* max-width: 102px; */
+  max-width: 100px;
   width: 100%;
   height: auto;
   min-height: 44px;

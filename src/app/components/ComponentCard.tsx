@@ -7,6 +7,7 @@ import CopyIconSvg from '../assets/icons/CopyIconSvg';
 import FavoriteIconSvg from '../assets/icons/FavoriteIconSvg';
 import FilledLikeIconSvg from '../assets/icons/FilledLikeIconSvg';
 import DefaultLoading from '../shared/loading/DefaultLoading';
+import { FRONTEND_HOST_NAME } from '../utils/constant';
 
 const ComponentCard = ({ card }) => {
   const {
@@ -62,14 +63,23 @@ const ComponentCard = ({ card }) => {
         };
 
         copyComponent(htmlContent, 'text/html');
-        setCopiedFigmaDesignMessage('Component copied to clipboard');
+        // setCopiedFigmaDesignMessage('Component copied to clipboard');
+        // Set message based on active tab
+        let copiedMessage = 'Component copied to clipboard';
+        if (activeTab === 1) copiedMessage = 'Page copied to clipboard';
+        else if (activeTab === 2) copiedMessage = 'Screen copied to clipboard';
+
+        setCopiedFigmaDesignMessage(copiedMessage);
         setComponentCopiedpopupVisible(true);
       } catch (error) {
         console.error('Copy failed:', error);
         alert('Failed Something went wrong.');
       }
     } else {
-      alert('Please subscribed first.');
+      // alert('Please subscribed first.');
+      parent.postMessage({ pluginMessage: { type: 'close-plugin' } }, '*');
+      const signupUrl = `${FRONTEND_HOST_NAME}/pricing`;
+      window.open(signupUrl, '_blank', 'noopener,noreferrer');
     }
     setCopyLoading(false);
   };
@@ -258,7 +268,19 @@ const ComponentCard = ({ card }) => {
             </div>
             {/* )} */}
             <button onClick={handleCopyFigmaCode} title="Copy">
-              <CopyIconSvg />
+              {copyLoading ? (
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  <DefaultLoading size="22px" color={'black'} thickness="2px" />
+                </div>
+              ) : (
+                <CopyIconSvg />
+              )}
             </button>
           </div>
         </div>

@@ -162,9 +162,12 @@ const LoginDialog: React.FC<Props> = (props) => {
             <div
               ref={popupRef}
               style={{
-                maxWidth: '426px',
-                minHeight: 'auto',
-                height: 'auto',
+                // maxWidth: '426px',
+                maxWidth: '380px',
+                // minHeight: 'auto',
+                // minHeight: '622px',
+                // height: 'auto',
+                height: '550px',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',
@@ -175,7 +178,8 @@ const LoginDialog: React.FC<Props> = (props) => {
                 boxSizing: 'border-box',
                 borderRadius: '24px',
                 backgroundColor: '#1B1B1B',
-                padding: '40px',
+                // padding: '40px',
+                padding: '24px',
                 position: 'relative',
               }}
             >
@@ -205,7 +209,7 @@ const LoginDialog: React.FC<Props> = (props) => {
                   cursor: 'pointer',
                 }}
               >
-                <UiWikiLogoSvg />
+                <UiWikiLogoSvg width='50' height='50'/>
               </div>
               <div
                 style={{
@@ -238,7 +242,7 @@ const LoginDialog: React.FC<Props> = (props) => {
                       fontFamily: 'Inter Tight',
                     }}
                   >
-                    Log in to UI Wiki
+                    Log in
                   </p>
                 </div>
 
@@ -246,7 +250,7 @@ const LoginDialog: React.FC<Props> = (props) => {
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '32px',
+                    gap: '24px',
                     width: '100%',
                   }}
                 >
@@ -290,7 +294,8 @@ const LoginDialog: React.FC<Props> = (props) => {
                           inputStyles={{
                             borderRadius: '14px',
                             backgroundColor: '#1B1B1B',
-                            height: '54px',
+                            // height: '54px',
+                            height: '51px',
                             fontSize: '14px',
                             fontWeight: '400',
                             lineHeight: '24px',
@@ -376,7 +381,8 @@ const LoginDialog: React.FC<Props> = (props) => {
                           inputStyles={{
                             borderRadius: '14px',
                             backgroundColor: '#1B1B1B',
-                            height: '54px',
+                            // height: '54px',
+                            height: '51px',
                             fontSize: '14px',
                             fontWeight: '400',
                             lineHeight: '24px',
@@ -455,6 +461,7 @@ const LoginDialog: React.FC<Props> = (props) => {
                   >
                     <div
                       style={{
+                        maxWidth:"346px",
                         width: '100%',
                         display: 'flex',
                         flexDirection: 'column',
@@ -465,9 +472,11 @@ const LoginDialog: React.FC<Props> = (props) => {
                       <ButtonPrimary
                         // id="signinButton"
                         sx={{
-                          // maxWidth:"346px",
-                          width: '346px',
-                          height: '54px',
+                          maxWidth:"346px",
+                          width: '300px',
+                          // width: '100%',
+                          // height: '54px',
+                          height: '51px',
                           textAlign: 'center',
                           textTransform: 'none',
                           borderRadius: '14px',
@@ -541,7 +550,8 @@ const LoginDialog: React.FC<Props> = (props) => {
                         // id="signinButton"
                         sx={{
                           width: '100%',
-                          height: '56px',
+                          // height: '56px',
+                          height: '51px',
                           textAlign: 'center',
                           textTransform: 'none',
                           backgroundColor: 'transparent',
