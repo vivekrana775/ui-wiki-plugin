@@ -1,8 +1,8 @@
 import React from 'react';
 
-const MagnifierSearchIcon = () => {
+const MagnifierSearchIcon = ({ width = '139', height = '155' }) => {
   return (
-    <svg width="139" height="155" viewBox="0 0 139 155" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width={width} height={height} viewBox="0 0 139 155" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         fill-rule="evenodd"
         clip-rule="evenodd"

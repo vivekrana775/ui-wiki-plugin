@@ -12,7 +12,8 @@ const NoResultUI = () => {
         display: 'flex',
         flexDirection: 'column',
         width: '100%',
-        height: '95%',
+        // height: '95%',
+        height: '100%',
         alignItems: 'center',
         justifyContent: 'center',
         // border: '1px solid red',
@@ -31,14 +32,16 @@ const NoResultUI = () => {
         }}
       >
         <div>
-          <MagnifierSearchIcon />
+          <MagnifierSearchIcon width='70' height='80'/>
         </div>
         <p
           style={{
             color: 'white',
             fontWeight: '600',
-            fontSize: '24px',
-            lineHeight: '28px',
+            // fontSize: '24px',
+            fontSize: '18px',
+            // lineHeight: '28px',
+            lineHeight: 'auto',
             width:"100%",
           }}
         >
@@ -48,7 +51,8 @@ const NoResultUI = () => {
           style={{
             color: 'rgba(255, 255, 255, 0.5)',
             fontWeight: '400',
-            fontSize: '14px',
+            // fontSize: '14px',
+            fontSize: '12px',
             lineHeight: '22px',
             width:"100%",
           }}
@@ -58,11 +62,13 @@ const NoResultUI = () => {
         <ButtonPrimary
           onClick={resetFilters}
           sx={{
-            height: '48px',
-            width: '141px',
-            borderRadius: '10px',
+            // height: '48px',
+            height: '40px',
+            // width: '141px',
+            width: '131px',
+            borderRadius: '50px',
           }}
-          LabelStyle={{ fontSize: '16px', fontWeight: '600' }}
+          LabelStyle={{ fontSize: '13px', fontWeight: '600' }}
           label="Reset Filter"
         />
       </div>

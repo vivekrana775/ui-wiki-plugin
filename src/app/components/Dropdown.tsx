@@ -15,6 +15,12 @@ export default function Dropdown({
   const ref: any = useRef();
   const [selectedLabel, setSelectedLabel] = useState('');
 
+  // Helper function to truncate long labels
+  const truncateLabel = (label, maxLength = 11) => {
+    if (!label) return '';
+    return label.length > maxLength ? `${label.substring(0, maxLength)}...` : label;
+  };
+
   // When selectedId changes from parent, update internal label
   useEffect(() => {
     if (selectedId === 'all') {
@@ -46,11 +52,16 @@ export default function Dropdown({
   return (
     <div className="custom-dropdown" ref={ref}>
       <button className={`dropdown-btn ${isOpen ? 'open' : ''}`} onClick={() => setIsOpen((prev: boolean) => !prev)}>
-        <span style={{ color:selectedLabel!==placeholder?"#FFF":"#8B8B8B" }} className='dropdown-btn-lable-container'>
+        <span
+          style={{ color: selectedLabel !== placeholder ? '#FFF' : '#8B8B8B' }}
+          className="dropdown-btn-lable-container"
+        >
           {showImage && selectedOption?.[imageKey] && (
             <img className="icon" src={selectedOption[imageKey]} alt="icon" />
           )}
-          {selectedLabel}
+          {/* {selectedLabel} */}
+          {/* Truncate displayed selected label */}
+          {truncateLabel(selectedLabel)}
         </span>
         <span className={`arrow ${isOpen ? 'rotate' : ''}`}>
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">

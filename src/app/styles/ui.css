@@ -53,7 +53,7 @@ input:focus {
 
 .dropdown-btn {
   width: 100%;
-  height: auto;
+  /* height: auto; */
   min-height: 44px;
   /* padding: 3px 12px; */
   padding: 11px 12px 11px 16px;
@@ -68,6 +68,10 @@ input:focus {
   align-items: center;
   transition: all 0.3s ease;
   box-shadow: inset 0 0 0 1px #3D3D3D;
+
+  /* Add these for long drop down value selected */
+  flex-shrink: 0;
+  overflow: hidden; /* keep consistent width */
 }
 
 .dropdown-btn-lable-container{
@@ -77,6 +81,14 @@ input:focus {
   font-weight: 600;
   font-size: 14px;
   line-height: 22px;
+
+  /* Add these for long drop down value selected */
+  flex: 1;                  /* allows the text to shrink within the button */
+  min-width: 0; 
+  white-space: nowrap;      /* prevent wrapping */
+  overflow: hidden;         /* hide overflowing text */
+  text-overflow: ellipsis;  /* show "..." at the end */
+  /* max-width: 80%;            prevent overflow beyond button */
 }
 .dropdown-btn.open {}
 
@@ -209,7 +221,8 @@ input:focus {
 }
 
 .toggle-container.active .toggle-circle {
-  transform: translateX(calc(100% - 2px)); 
+  /* transform: translateX(calc(100% - 2px));  */
+  transform: translateX(calc(100% - 4px)); 
 }
 
 /* Settings Sctyle  */

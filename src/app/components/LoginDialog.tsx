@@ -78,6 +78,11 @@ const LoginDialog: React.FC<Props> = (props) => {
           switch (res?.response?.data?.message) {
             case 'Please Verify your email.':
               // router.push("/verify-email", { state: { email: loginId } }); uncomment
+
+              // Pass email to the verify-email page using query params
+              // const signupUrl = `${FRONTEND_HOST_NAME}/verify-email?email=${encodeURIComponent(loginId)}`;
+              const signupUrl = `${FRONTEND_HOST_NAME}/verify-email?email=${loginId}`;
+              window.open(signupUrl, '_blank', 'noopener,noreferrer');
               break;
             case 'Failed to authenticate user':
               setError('Invalid Email or password! Please try again.');
@@ -89,6 +94,7 @@ const LoginDialog: React.FC<Props> = (props) => {
         }
       } catch (error: any) {
         console.log('Something went wrong.');
+        setError('Something went wrong.');
       } finally {
         setShowLoading(false);
       }
@@ -209,7 +215,7 @@ const LoginDialog: React.FC<Props> = (props) => {
                   cursor: 'pointer',
                 }}
               >
-                <UiWikiLogoSvg width='50' height='50'/>
+                <UiWikiLogoSvg width="50" height="50" />
               </div>
               <div
                 style={{
@@ -461,7 +467,7 @@ const LoginDialog: React.FC<Props> = (props) => {
                   >
                     <div
                       style={{
-                        maxWidth:"346px",
+                        maxWidth: '346px',
                         width: '100%',
                         display: 'flex',
                         flexDirection: 'column',
@@ -472,7 +478,7 @@ const LoginDialog: React.FC<Props> = (props) => {
                       <ButtonPrimary
                         // id="signinButton"
                         sx={{
-                          maxWidth:"346px",
+                          maxWidth: '346px',
                           width: '300px',
                           // width: '100%',
                           // height: '54px',
@@ -560,7 +566,12 @@ const LoginDialog: React.FC<Props> = (props) => {
                           // paddingY: '0px',
                         }}
                         // ref={signinButtonRef}
-                        onClick={() => handleGoogleSignIn()}
+                        // onClick={() => handleGoogleSignIn()}
+                        onClick={() => {
+                          // parent.postMessage({ pluginMessage: { type: 'close-plugin' } }, '*');
+                          const signupUrl = `${FRONTEND_HOST_NAME}/login`;
+                          window.open(signupUrl, '_blank', 'noopener,noreferrer');
+                        }}
                         startIcon={<GoogleIcon />}
                       >
                         <p

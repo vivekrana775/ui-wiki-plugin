@@ -42,7 +42,7 @@ const SearchComponent = () => {
       />
       {localSearch && (
         <button onClick={handleClearSearch} className="search-clear">
-          <SearchComponentCancelIconSvg width="20" height="20" />
+          <SearchComponentCancelIconSvg width="24" height="24" />
         </button>
       )}
     </div>
